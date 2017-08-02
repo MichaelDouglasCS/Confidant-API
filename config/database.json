@@ -1,0 +1,8 @@
+{
+    "developmentLocal": {
+        "mongoURL": "mongodb://localhost/admin"
+    },
+    "development": {
+        "mongoURL": "mongodb://mdcs:Mdcs10061996@confidant-shard-00-00-on6yw.mongodb.net:27017,confidant-shard-00-01-on6yw.mongodb.net:27017,confidant-shard-00-02-on6yw.mongodb.net:27017/ConfidantDB?ssl=true&replicaSet=Confidant-shard-0&authSource=admin"
+    }
+}
