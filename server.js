@@ -24,7 +24,7 @@ var mongoOptions = {
     server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 300000 } },
     replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 300000 } }
 };
-var mongoURL = (process.env.MONGODB_URL || databaseConfig.developmentLocal.mongoURL) + "?socketTimeoutMS=120000";
+var mongoURL = (process.env.MONGODB_URL || databaseConfig.development.mongoURL) + "?socketTimeoutMS=120000";
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoURL, mongoOptions);
 
