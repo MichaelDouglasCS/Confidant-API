@@ -33,7 +33,7 @@ let userSchema = mongoose.Schema({
     deviceToken: String
 });
 
-//Hide "__v" and "_id" and "password"
+//Hide "_v", "password" and rename "_id" 
 userSchema.set('toJSON', {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
