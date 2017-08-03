@@ -44,7 +44,7 @@ router.get('/facebook/callback', (req, res) => {
     console.log("-------->REQ :" + req.body);
     passport.authenticate('facebook', (err, userFB, info) => {
         console.log("-------->ERR :" + err);
-        console.log("-------->USERFB :" + userFB._json);
+        console.log("-------->USERFB :" + userFB.displayName);
         console.log("-------->INFO :" + info);
         users.facebook(userFB)
             .then((userAuth) => {
