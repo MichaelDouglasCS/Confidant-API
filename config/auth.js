@@ -5,6 +5,8 @@ var facebookCallback = (accessToken, refreshToken, userFB, done) => {
     console.log("-------->ACCESS TOKEN " + accessToken);
     console.log("-------->REFRESH TOKEN " + refreshToken);
     console.log("-------->USERFB CALLBACK " + userFB.displayName);
+     console.log("-------->USERFB CALLBACK JSON EMAIL" + userFB._json.email);
+    console.log("-------->USERFB CALLBACK EMAIL" + userFB.emails[0].value);
     done(null, userFB);
 };
 

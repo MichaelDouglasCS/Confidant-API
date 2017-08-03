@@ -133,6 +133,7 @@ let facebook = function (userReceived) {
         let parsedUser = new User(userReceived._json)
         parsedUser.age = userReceived._json.age_range.min
         console.log("-------->PARSED USER :" + parsedUser);
+        console.log("-------->PARSED USER EMAIL:" + parsedUser.email);
 
         User.findOne({ email: parsedUser.email })
             .then((userDB) => {
