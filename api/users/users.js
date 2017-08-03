@@ -75,8 +75,10 @@ let register = function (userReceived) {
                                 user.password = passDecrypted;
                                 user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
+                                console.log("Registering User: " + user.name);
                                 user.save()
                                     .then((userRegistered) => {
+                                        console.log("User Registered...");
                                         resolve(userRegistered);
                                     }).catch(err => reject(err));
                             });
@@ -138,15 +140,19 @@ let facebook = function (userReceived) {
                     let user = new User(parsedUser);
                     user.createdDate = Date.now()
                     user.deviceToken = generateUserToken(user);
+                    console.log("Registering User: " + user.name);
                     user.save()
                         .then((userRegistered) => {
+                            console.log("User Registered...");
                             resolve(userRegistered);
                         }).catch(err => reject(err));
                 } else {
                     //Authenticate
                     userDB.deviceToken = generateUserToken(userDB);
+                    console.log("Authenticating User: " + userDB.name);
                     userDB.save()
                         .then((userAuth) => {
+                            console.log("User Authenticated...");
                             resolve(userAuth);
                         }).catch(err => reject(err));
                 }
@@ -173,8 +179,10 @@ let authUserDevBeta = function (userReceived) {
                 } else {
                     if (userReceived.password == userDB.password) {
                         userDB.deviceToken = generateUserToken(userDB);
+                        console.log("Authenticating User: " + userDB.name);
                         userDB.save()
                             .then((userAuth) => {
+                                console.log("User Authenticated...");
                                 resolve(userAuth);
                             }).catch(err => reject(err));
                     } else {
