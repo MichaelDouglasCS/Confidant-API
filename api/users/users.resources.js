@@ -30,7 +30,7 @@ router.post('/register', (req, res) => {
 });
 
 /**
- * A route method to register or authenticate the user by Facebook.
+ * A route method to Register or Authenticate the user by Facebook.
  *
  * @author Michael Douglas
  * @since 02/08/2017

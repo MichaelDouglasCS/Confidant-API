@@ -117,7 +117,7 @@ let authenticate = function (userReceived) {
 };
 
 /**
- * Register or Authenticate an user by facebook
+ * Register or Authenticate an user by Facebook
  *
  * @author Michael Douglas
  * @since 03/08/2017
