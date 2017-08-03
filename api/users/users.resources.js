@@ -1,6 +1,7 @@
-/*jshint esnext: true */
+// users.resource.js
 
 var express = require('express');
+var passport = require('passport');
 var router = express.Router();
 var users = require('./users')
 var responseUtils = require('../utils/response.utils');
@@ -15,7 +16,7 @@ var responseUtils = require('../utils/response.utils');
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post('/register', (req, res, next) => {
+router.post('/register', (req, res) => {
     let user = req.body;
     users.register(user)
         .then((userAuth) => {
@@ -29,6 +30,31 @@ router.post('/register', (req, res, next) => {
 });
 
 /**
+ * A route method to register or authenticate the user by Facebook.
+ *
+ * @author Michael Douglas
+ * @since 02/08/2017
+ *
+ * History:
+ * 02/08/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
+router.get('/facebook/callback', (req, res) => {
+    passport.authenticate('facebook', (err, userFB, info) => {
+        users.facebook(userFB)
+            .then((userAuth) => {
+                let responseObj = responseUtils.buildBaseResponse();
+                responseObj.user = userAuth;
+                res.status(200).json(responseObj);
+            }).catch((error) => {
+                let httpCode = error.status || 500;
+                res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+            });
+    })(req, res);
+});
+
+/**
  * A route method to authenticate the user.
  *
  * @author Michael Douglas
@@ -38,7 +64,7 @@ router.post('/register', (req, res, next) => {
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post('/authenticate', (req, res, next) => {
+router.post('/authenticate', (req, res) => {
     let user = req.body;
     users.authenticate(user)
         .then((userAuth) => {

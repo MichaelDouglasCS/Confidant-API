@@ -1,4 +1,6 @@
 var express = require('express');
+var passport = require('passport');
+var FacebookStrategy = require('passport-facebook').Strategy;
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -7,6 +9,7 @@ var compression = require("compression");
 var responseUtils = require('./api/utils/response.utils');
 
 var databaseConfig = require('./config/database');
+var configAuth = require('./config/auth');
 
 var users = require('./api/users/users.resources');
 // var intakes = require('./api/intakes/intakes.resources');
@@ -24,7 +27,7 @@ var mongoOptions = {
     server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 300000 } },
     replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 300000 } }
 };
-var mongoURL = (process.env.MONGODB_URL || databaseConfig.development.mongoURL) + "?socketTimeoutMS=120000";
+var mongoURL = (process.env.MONGODB_URL || databaseConfig.developmentLocal.mongoURL) + "?socketTimeoutMS=120000";
 mongoose.Promise = global.Promise;
 mongoose.connect(mongoURL, mongoOptions);
 
@@ -36,11 +39,14 @@ db.once('open', function() {
     console.log("MongoDB - Connection successfully");
 });
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// Config
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+//Config Passport
+app.use(passport.initialize());
+passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCallback));
 
 //Unprotected routes:
 app.use(baseURL + '/v1/users', users);

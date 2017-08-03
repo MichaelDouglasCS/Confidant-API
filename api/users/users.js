@@ -12,6 +12,7 @@
  */
 let mongoose = require("mongoose");
 let ObjectId = require('mongoose').Types.ObjectId;
+var passport = require('passport');
 let jwtSettings = require('../../config/jwt-settings');
 let validator = require('validator');
 let userValidation = require('./users.validation');
@@ -113,6 +114,25 @@ let authenticate = function (userReceived) {
 };
 
 /**
+ * Register or Authenticate an user by facebook
+ *
+ * @author Michael Douglas
+ * @since 03/08/2017
+ *
+ * History:
+ * 03/08/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let facebook = function (userReceived) {
+    return new Promise((resolve, reject) => {
+        User.findOne({ email: userReceived.emails[0].value })
+            .then((userDB) => {
+
+            }).catch(err => reject(err));
+    });
+};
+
+/**
  * Authenticate the user on DEV and BETA mode.
  *
  * @author Michael Douglas
@@ -185,5 +205,6 @@ let decrypt = function (stringToDecrypt) {
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     register: register,
-    authenticate: authenticate
+    authenticate: authenticate,
+    facebook: facebook
 };
