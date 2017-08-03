@@ -130,11 +130,14 @@ let authenticate = function (userReceived) {
  */
 let facebook = function (userReceived) {
     return new Promise((resolve, reject) => {
+        console.log("-------->USER RECEIVED :" + userReceived);
         let parsedUser = new User(userReceived._json)
         parsedUser.age = userReceived._json.age_range.min
+        console.log("-------->PARSED USER :" + parsedUser);
 
         User.findOne({ email: parsedUser.email })
             .then((userDB) => {
+                console.log("-------->USER DB :" + userDB);
                 if (!userDB) {
                     //Register
                     let user = new User(parsedUser);
