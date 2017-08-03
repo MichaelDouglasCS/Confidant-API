@@ -29,8 +29,10 @@ let userSchema = mongoose.Schema({
     password: String,
     name: String,
     birthdate: String,
+    age: String,
     gender: String,
     typeOfUser: String,
+    createdDate: Number,
     deviceToken: String
 });
 
@@ -71,6 +73,7 @@ let register = function (userReceived) {
                             .then((passDecrypted) => {
                                 let user = new User(userReceived);
                                 user.password = passDecrypted;
+                                user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
                                 user.save()
                                     .then((userRegistered) => {
@@ -125,9 +128,28 @@ let authenticate = function (userReceived) {
  */
 let facebook = function (userReceived) {
     return new Promise((resolve, reject) => {
-        User.findOne({ email: userReceived.emails[0].value })
-            .then((userDB) => {
+        let parsedUser = new User(userReceived._json)
+        parsedUser.age = userReceived._json.age_range.min
 
+        User.findOne({ email: parsedUser.email })
+            .then((userDB) => {
+                if (!userDB) {
+                    //Register
+                    let user = new User(parsedUser);
+                    user.createdDate = Date.now()
+                    user.deviceToken = generateUserToken(user);
+                    user.save()
+                        .then((userRegistered) => {
+                            resolve(userRegistered);
+                        }).catch(err => reject(err));
+                } else {
+                    //Authenticate
+                    userDB.deviceToken = generateUserToken(userDB);
+                    userDB.save()
+                        .then((userAuth) => {
+                            resolve(userAuth);
+                        }).catch(err => reject(err));
+                }
             }).catch(err => reject(err));
     });
 };
@@ -195,10 +217,15 @@ let decrypt = function (stringToDecrypt) {
     let CRYPT_KEY = 'confidantappsecretkey';
 
     return new Promise((resolve, reject) => {
-        var bytes = CryptoJS.AES.decrypt(stringToDecrypt.toString(), CRYPT_KEY);
-        var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+        var encryptedString = ""
+
+        if (stringToDecrypt && stringToDecrypt != "") {
+            encryptedString = stringToDecrypt
+            var bytes = CryptoJS.AES.decrypt(encryptedString.toString(), CRYPT_KEY);
+            var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+        }
         // resolve(plaintext); //Change when the password beign sent encrypted
-        resolve(stringToDecrypt)
+        resolve(encryptedString)
     });
 }
 
