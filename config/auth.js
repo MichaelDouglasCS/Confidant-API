@@ -9,7 +9,7 @@ module.exports = {
   facebookAuth: {
     clientID: '1405487309509241',
     clientSecret: 'f6104678b4554303d247e11febd53d6f',
-    callbackURL: 'http://localhost:3000/confidant/api/v1/users/facebook/callback',
+    callbackURL: 'https://confidant-api.herokuapp.com/confidant/api/v1/users/facebook/callback',
     profileFields: ['emails', 'displayName', 'age_range', 'gender']
   },
   facebookCallback: facebookCallback
