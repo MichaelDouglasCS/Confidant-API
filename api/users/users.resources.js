@@ -41,11 +41,10 @@ router.post('/register', (req, res) => {
  */
 router.get('/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
 router.get('/facebook/callback', (req, res) => {
-    console.log("-------->REQ :" + req);
-    console.log("-------->RES :" + res);
+    console.log("-------->REQ :" + req.body);
     passport.authenticate('facebook', (err, userFB, info) => {
         console.log("-------->ERR :" + err);
-        console.log("-------->USERFB :" + userFB);
+        console.log("-------->USERFB :" + userFB._json);
         console.log("-------->INFO :" + info);
         users.facebook(userFB)
             .then((userAuth) => {
