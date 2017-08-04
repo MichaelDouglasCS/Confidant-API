@@ -10,11 +10,11 @@
  * 31/07/2017 - Michael Douglas - Initial creation.
  * 
  */
-let Enum = require('enum');
+let Enum = require("enum");
 
 let TypeOfUser = new Enum({
-    USER: 'User',
-    CONFIDANT: 'Confidant'
+    USER: "User",
+    CONFIDANT: "Confidant"
 });
 
 module.exports = {

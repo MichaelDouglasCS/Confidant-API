@@ -11,16 +11,16 @@
  *
  */
 let mongoose = require("mongoose");
-let ObjectId = require('mongoose').Types.ObjectId;
-var passport = require('passport');
-let jwtSettings = require('../../config/jwt-settings');
-let validator = require('validator');
-let userValidation = require('./users.validation');
-let jwt = require('jsonwebtoken');
-let CryptoJS = require('crypto-js');
+let ObjectId = require("mongoose").Types.ObjectId;
+var passport = require("passport");
+let jwtSettings = require("../../config/jwt-settings");
+let validator = require("validator");
+let userValidation = require("./users.validation");
+let jwt = require("jsonwebtoken");
+let CryptoJS = require("crypto-js");
 let Schema = mongoose.Schema;
 
-let typeOfUserEnum = require('./userType.enum');
+let typeOfUserEnum = require("./userType.enum");
 
 // ------ MODEL --------- //
 let userSchema = mongoose.Schema({
@@ -29,7 +29,6 @@ let userSchema = mongoose.Schema({
     password: String,
     name: String,
     birthdate: String,
-    age: String,
     gender: String,
     typeOfUser: String,
     createdDate: Number,
@@ -37,7 +36,7 @@ let userSchema = mongoose.Schema({
 });
 
 //Hide "_v", "password" and rename "_id" 
-userSchema.set('toJSON', {
+userSchema.set("toJSON", {
     transform: function (doc, ret, options) {
         ret.id = ret._id;
         delete ret._id;
@@ -46,7 +45,7 @@ userSchema.set('toJSON', {
     }
 });
 
-let User = mongoose.model('User', userSchema);
+let User = mongoose.model("User", userSchema);
 
 // ----- PUBLIC METHODS ------- //
 /**
@@ -135,7 +134,7 @@ let authenticate = function (userReceived) {
 let facebook = function (userReceived) {
     return new Promise((resolve, reject) => {
         let parsedUser = new User(userReceived._json)
-        parsedUser.age = userReceived._json.age_range.min
+        parsedUser.birthdate = userReceived._json.birthday
 
         console.log(" -----------------------------//--------------------------- ");
         console.log(" --------> PARSED USER :" + parsedUser);
@@ -253,7 +252,7 @@ let generateUserToken = function (userReceived) {
  *
  */
 let decrypt = function (stringToDecrypt) {
-    let CRYPT_KEY = 'confidantappsecretkey';
+    let CRYPT_KEY = "confidantappsecretkey";
 
     return new Promise((resolve, reject) => {
         var encryptedString = ""

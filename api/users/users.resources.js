@@ -1,10 +1,11 @@
 // users.resource.js
 
-var express = require('express');
-var passport = require('passport');
+var express = require("express");
+var passport = require("passport");
 var router = express.Router();
-var users = require('./users')
-var responseUtils = require('../utils/response.utils');
+var users = require("./users")
+let userValidation = require("./users.validation");
+var responseUtils = require("../utils/response.utils");
 
 /**
  * A route method to register the user.
@@ -16,7 +17,7 @@ var responseUtils = require('../utils/response.utils');
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post('/register', (req, res) => {
+router.post("/register", (req, res) => {
     let user = req.body;
     users.register(user)
         .then((userAuth) => {
@@ -39,18 +40,23 @@ router.post('/register', (req, res) => {
  * 02/08/2017 - Michael Douglas - Initial creation.
  *
  */
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email', 'public_profile'] }));
-router.get('/facebook/callback', (req, res) => {
-    passport.authenticate('facebook', (err, userFB, info) => {
-        users.facebook(userFB)
-            .then((userAuth) => {
-                let responseObj = responseUtils.buildBaseResponse();
-                responseObj.user = userAuth;
-                res.status(200).json(responseObj);
-            }).catch((error) => {
-                let httpCode = error.status || 500;
-                res.status(httpCode).json(responseUtils.buildBaseResponse(error));
-            });
+// ---------> "user_birthday" Send to Facebook allow permissions
+router.get("/facebook", passport.authenticate("facebook", { scope: ["public_profile", "email", "user_birthday"] }));
+router.get("/facebook/callback", (req, res) => {
+    passport.authenticate("facebook", (err, userFB, info) => {
+        if (err || !userFB) {
+            res.status(userValidation.facebookError().status).json(userValidation.facebookError());
+        } else {
+            users.facebook(userFB)
+                .then((userAuth) => {
+                    let responseObj = responseUtils.buildBaseResponse();
+                    responseObj.user = userAuth;
+                    res.status(200).json(responseObj);
+                }).catch((error) => {
+                    let httpCode = error.status || 500;
+                    res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+                });
+        }
     })(req, res);
 });
 
@@ -64,7 +70,7 @@ router.get('/facebook/callback', (req, res) => {
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post('/authenticate', (req, res) => {
+router.post("/authenticate", (req, res) => {
     let user = req.body;
     users.authenticate(user)
         .then((userAuth) => {
