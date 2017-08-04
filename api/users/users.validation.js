@@ -10,7 +10,7 @@
  * 31/07/2017 - Michael Douglas - Initial creation.
  * 
  */
-let validator = require('validator');
+let validator = require("validator");
 
 // ------- PUBLIC METHODS -------- //
 
@@ -83,6 +83,23 @@ let emailNotFound = function() {
 };
 
 /**
+ * A method to throw an exception when occurred an error on Facebook.
+ *
+ * @author Michael Douglas
+ * @since 03/08/2017
+ *
+ * History:
+ * 03/08/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let facebookError = function() {
+    let errors = { status: 401 };
+    errors.errorCode = 405;
+    errors.errorMessage = "Sorry! Occurred an error on Facebook, please, try again.";
+    return errors;
+};
+
+/**
  * A method to throw an exception when occured an internal error.
  *
  * @author Michael Douglas
@@ -94,7 +111,7 @@ let emailNotFound = function() {
  */
 let internalError = function() {
     let errors = { status: 401 };
-    errors.errorCode = 405;
+    errors.errorCode = 406;
     errors.errorMessage = "Internal Error.";
     return errors;
 };
@@ -105,5 +122,6 @@ module.exports = {
     emailIsNotValid: emailIsNotValid,
     emailNotFound: emailNotFound,
     emailAlreadyInUse: emailAlreadyInUse,
+    facebookError: facebookError,
     internalError: internalError
 };

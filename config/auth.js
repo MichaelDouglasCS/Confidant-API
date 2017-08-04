@@ -7,10 +7,10 @@ var facebookCallback = (accessToken, refreshToken, userFB, done) => {
 
 module.exports = {
   facebookAuth: {
-    clientID: '1405487309509241',
-    clientSecret: 'f6104678b4554303d247e11febd53d6f',
-    callbackURL: 'http://localhost:3000/confidant/api/v1/users/facebook/callback',
-    profileFields: ['emails', 'displayName', 'age_range', 'gender']
+    clientID: "1405487309509241",
+    clientSecret: "f6104678b4554303d247e11febd53d6f",
+    callbackURL: "http://localhost:3000/confidant/api/v1/users/facebook/callback",
+    profileFields: ["email", "displayName", "birthday", "age_range", "gender"]
   },
   facebookCallback: facebookCallback
 };
