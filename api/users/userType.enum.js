@@ -1,4 +1,4 @@
-/*jshint esnext: true */
+// userType.enum.js
 
 /**
  * Enum to represent type of user
