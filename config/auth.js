@@ -10,7 +10,7 @@ module.exports = {
     clientID: "1405487309509241",
     clientSecret: "f6104678b4554303d247e11febd53d6f",
     callbackURL: "http://localhost:3000/confidant/api/v1/users/facebook/callback",
-    profileFields: ["email", "displayName", "birthday", "age_range", "gender"]
+    profileFields: ["email", "displayName", "birthday", "gender"]
   },
   facebookCallback: facebookCallback
 };
