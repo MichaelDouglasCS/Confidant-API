@@ -139,6 +139,8 @@ let facebook = function (userReceived) {
         console.log(" -----------------------------//--------------------------- ");
         console.log(" --------> PARSED USER :" + parsedUser);
         console.log(" -----------------------------//--------------------------- ");
+        console.log(" --------> PARSED USER EMAIL :" + parsedUser.email);
+        console.log(" -----------------------------//--------------------------- ");
         User.findOne({ email: parsedUser.email })
             .then((userDB) => {
                 console.log(" -----------------------------//--------------------------- ");
@@ -151,6 +153,8 @@ let facebook = function (userReceived) {
                     user.deviceToken = generateUserToken(user);
                     console.log(" -----------------------------//--------------------------- ");
                     console.log(" --------> REGISTERING USER :" + user.name);
+                    console.log(" -----------------------------//--------------------------- ");
+                    console.log(" --------> REGISTERING USER EMAIL:" + user.email);
                     console.log(" -----------------------------//--------------------------- ");
                     user.save()
                         .then((userRegistered) => {

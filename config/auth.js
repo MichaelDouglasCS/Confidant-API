@@ -9,6 +9,10 @@ var facebookCallback = (accessToken, refreshToken, userFB, done) => {
   console.log(" -----------------------------//--------------------------- ");
   console.log(" --------> USERFB CALLBACK " + userFB.displayName);
   console.log(" -----------------------------//--------------------------- ");
+  console.log(" --------> USERFB JSON " + JSON.stringify(userFB._json));
+  console.log(" -----------------------------//--------------------------- ");
+  console.log(" --------> USERFB OBJECT" + JSON.stringify(userFB));
+  console.log(" -----------------------------//--------------------------- ");
   done(null, userFB);
 };
 
