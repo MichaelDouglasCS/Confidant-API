@@ -75,10 +75,14 @@ let register = function (userReceived) {
                                 user.password = passDecrypted;
                                 user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
-                                console.log("Registering User: " + user.name);
+                                console.log(" -----------------------------//--------------------------- ");
+                                console.log(" --------> REGISTERING USER :" + user.name);
+                                console.log(" -----------------------------//--------------------------- ");
                                 user.save()
                                     .then((userRegistered) => {
-                                        console.log("User Registered...");
+                                        console.log(" -----------------------------//--------------------------- ");
+                                        console.log(" --------> USER REGISTERED...");
+                                        console.log(" -----------------------------//--------------------------- ");
                                         resolve(userRegistered);
                                     }).catch(err => reject(err));
                             });
@@ -132,30 +136,40 @@ let facebook = function (userReceived) {
     return new Promise((resolve, reject) => {
         let parsedUser = new User(userReceived._json)
         parsedUser.age = userReceived._json.age_range.min
-        console.log("-------->PARSED USER :" + parsedUser);
-        console.log("-------->PARSED USER EMAIL :" + parsedUser.email);
-
+        console.log(" -----------------------------//--------------------------- ");
+        console.log(" --------> PARSED USER :" + parsedUser);
+        console.log(" -----------------------------//--------------------------- ");
         User.findOne({ email: parsedUser.email })
             .then((userDB) => {
-                console.log("-------->USER DB :" + userDB);
+                console.log(" -----------------------------//--------------------------- ");
+                console.log(" --------> USER DB :" + userDB);
+                console.log(" -----------------------------//--------------------------- ");
                 if (!userDB) {
                     //Register
                     let user = new User(parsedUser);
                     user.createdDate = Date.now()
                     user.deviceToken = generateUserToken(user);
-                    console.log("Registering User: " + user.name);
+                    console.log(" -----------------------------//--------------------------- ");
+                    console.log(" --------> REGISTERING USER :" + user.name);
+                    console.log(" -----------------------------//--------------------------- ");
                     user.save()
                         .then((userRegistered) => {
-                            console.log("User Registered...");
+                            console.log(" -----------------------------//--------------------------- ");
+                            console.log(" --------> USER REGISTERED...");
+                            console.log(" -----------------------------//--------------------------- ");
                             resolve(userRegistered);
                         }).catch(err => reject(err));
                 } else {
                     //Authenticate
                     userDB.deviceToken = generateUserToken(userDB);
-                    console.log("Authenticating User: " + userDB.name);
+                    console.log(" -----------------------------//--------------------------- ");
+                    console.log(" --------> AUTHENTICATING USER :" + userDB.name);
+                    console.log(" -----------------------------//--------------------------- ");
                     userDB.save()
                         .then((userAuth) => {
-                            console.log("User Authenticated...");
+                            console.log(" -----------------------------//--------------------------- ");
+                            console.log(" --------> USER AUTHENTICATED...");
+                            console.log(" -----------------------------//--------------------------- ");
                             resolve(userAuth);
                         }).catch(err => reject(err));
                 }
@@ -182,10 +196,14 @@ let authUserDevBeta = function (userReceived) {
                 } else {
                     if (userReceived.password == userDB.password) {
                         userDB.deviceToken = generateUserToken(userDB);
+                        console.log(" -----------------------------//--------------------------- ");
                         console.log("Authenticating User: " + userDB.name);
+                        console.log(" -----------------------------//--------------------------- ");
                         userDB.save()
                             .then((userAuth) => {
+                                console.log(" -----------------------------//--------------------------- ");
                                 console.log("User Authenticated...");
+                                console.log(" -----------------------------//--------------------------- ");
                                 resolve(userAuth);
                             }).catch(err => reject(err));
                     } else {
