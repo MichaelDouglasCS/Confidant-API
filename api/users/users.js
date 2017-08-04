@@ -75,10 +75,8 @@ let register = function (userReceived) {
                                 user.password = passDecrypted;
                                 user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
-                                console.log("Registering User: " + user.name);
                                 user.save()
                                     .then((userRegistered) => {
-                                        console.log("User Registered...");
                                         resolve(userRegistered);
                                     }).catch(err => reject(err));
                             });
@@ -133,30 +131,30 @@ let facebook = function (userReceived) {
         let parsedUser = new User(userReceived._json)
         parsedUser.age = userReceived._json.age_range.min
 
-        User.findOne({ email: parsedUser.email })
-            .then((userDB) => {
-                if (!userDB) {
-                    //Register
-                    let user = new User(parsedUser);
-                    user.createdDate = Date.now()
-                    user.deviceToken = generateUserToken(user);
-                    console.log("Registering User: " + user.name);
-                    user.save()
-                        .then((userRegistered) => {
-                            console.log("User Registered...");
-                            resolve(userRegistered);
-                        }).catch(err => reject(err));
-                } else {
-                    //Authenticate
-                    userDB.deviceToken = generateUserToken(userDB);
-                    console.log("Authenticating User: " + userDB.name);
-                    userDB.save()
-                        .then((userAuth) => {
-                            console.log("User Authenticated...");
-                            resolve(userAuth);
-                        }).catch(err => reject(err));
-                }
-            }).catch(err => reject(err));
+        if (!parsedUser.email || parsedUser.email == "") {
+            reject(userValidation.emailNotFound());
+        } else {
+            User.findOne({ email: parsedUser.email })
+                .then((userDB) => {
+                    if (!userDB) {
+                        //Register
+                        let user = new User(parsedUser);
+                        user.createdDate = Date.now()
+                        user.deviceToken = generateUserToken(user);
+                        user.save()
+                            .then((userRegistered) => {
+                                resolve(userRegistered);
+                            }).catch(err => reject(err));
+                    } else {
+                        //Authenticate
+                        userDB.deviceToken = generateUserToken(userDB);
+                        userDB.save()
+                            .then((userAuth) => {
+                                resolve(userAuth);
+                            }).catch(err => reject(err));
+                    }
+                }).catch(err => reject(err));
+        }
     });
 };
 

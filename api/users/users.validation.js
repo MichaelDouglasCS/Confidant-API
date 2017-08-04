@@ -66,6 +66,23 @@ let emailAlreadyInUse = function() {
 };
 
 /**
+ * A method to throw an exception when was not possible get the email.
+ *
+ * @author Michael Douglas
+ * @since 03/08/2017
+ *
+ * History:
+ * 03/08/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let emailNotFound = function() {
+    let errors = { status: 401 };
+    errors.errorCode = 404;
+    errors.errorMessage = "Sorry! Not was possible get the email.";
+    return errors;
+};
+
+/**
  * A method to throw an exception when occured an internal error.
  *
  * @author Michael Douglas
@@ -77,7 +94,7 @@ let emailAlreadyInUse = function() {
  */
 let internalError = function() {
     let errors = { status: 401 };
-    errors.errorCode = 404;
+    errors.errorCode = 405;
     errors.errorMessage = "Internal Error.";
     return errors;
 };
@@ -86,6 +103,7 @@ let internalError = function() {
 module.exports = {
     userNotFound: userNotFound,
     emailIsNotValid: emailIsNotValid,
+    emailNotFound: emailNotFound,
     emailAlreadyInUse: emailAlreadyInUse,
     internalError: internalError
 };
