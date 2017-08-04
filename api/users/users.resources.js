@@ -31,6 +31,29 @@ router.post("/register", (req, res) => {
 });
 
 /**
+ * A route method to authenticate the user.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.post("/authenticate", (req, res) => {
+    let user = req.body;
+    users.authenticate(user)
+        .then((userAuth) => {
+            let responseObj = responseUtils.buildBaseResponse();
+            responseObj.user = userAuth;
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
+
+/**
  * A route method to Register or Authenticate the user by Facebook.
  *
  * @author Michael Douglas
@@ -58,29 +81,6 @@ router.get("/facebook/callback", (req, res) => {
                 });
         }
     })(req, res);
-});
-
-/**
- * A route method to authenticate the user.
- *
- * @author Michael Douglas
- * @since 26/07/2017
- *
- * History:
- * 26/07/2017 - Michael Douglas - Initial creation.
- *
- */
-router.post("/authenticate", (req, res) => {
-    let user = req.body;
-    users.authenticate(user)
-        .then((userAuth) => {
-            let responseObj = responseUtils.buildBaseResponse();
-            responseObj.user = userAuth;
-            res.status(200).json(responseObj);
-        }).catch((error) => {
-            let httpCode = error.status || 500;
-            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
-        });
 });
 
 module.exports = router;
