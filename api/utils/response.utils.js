@@ -1,24 +1,24 @@
 /*jshint esnext: true */
 const SUCCESS_RESPONSE_CODE = 0;
-const SUCCESS_RESPONSE_MESSAGE = 'Success';
+const SUCCESS_RESPONSE_MESSAGE = "Success";
 
 const INTERNAL_ERROR_RESPONSE_CODE = 500;
-const INTERNAL_ERROR_RESPONSE_MESSAGE = 'Internal server error.';
+const INTERNAL_ERROR_RESPONSE_MESSAGE = "Internal server error.";
 
 const NOT_FOUND_ERROR_RESPONSE_CODE = 404;
-const NOT_FOUND_ERROR_RESPONSE_MESSAGE = 'The requested method were not found.';
+const NOT_FOUND_ERROR_RESPONSE_MESSAGE = "The requested method were not found.";
 
 const INVALID_TOKEN_ERROR_RESPONSE_CODE = 403;
-const INVALID_TOKEN_ERROR_RESPONSE_MESSAGE = 'Informed token is invalid or expired.';
+const INVALID_TOKEN_ERROR_RESPONSE_MESSAGE = "Informed token is invalid or expired.";
 
 const TOKEN_NOT_FOUND_ERROR_RESPONSE_CODE = 403;
-const TOKEN_NOT_FOUND_ERROR_RESPONSE_MESSAGE = 'Access forbidden, no token informed.';
+const TOKEN_NOT_FOUND_ERROR_RESPONSE_MESSAGE = "Access forbidden, no token informed.";
 
 const ENTITY_ALREADY_EXISTS_ERROR_RESPONSE_CODE = 409;
-const ENTITY_ALREADY_EXISTS_ERROR_RESPONSE_MESSAGE = 'Cannot process POST, entity already exists.';
+const ENTITY_ALREADY_EXISTS_ERROR_RESPONSE_MESSAGE = "Cannot process POST, entity already exists.";
 
 const ENTITY_NOT_FOUND_ERROR_RESPONSE_CODE = 404;
-const ENTITY_NOT_FOUND_ERROR_RESPONSE_MESSAGE = 'The requested entity is not found.';
+const ENTITY_NOT_FOUND_ERROR_RESPONSE_MESSAGE = "The requested entity is not found.";
 
 
 /**
