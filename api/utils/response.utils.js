@@ -20,7 +20,6 @@ const ENTITY_ALREADY_EXISTS_ERROR_RESPONSE_MESSAGE = "Cannot process POST, entit
 const ENTITY_NOT_FOUND_ERROR_RESPONSE_CODE = 404;
 const ENTITY_NOT_FOUND_ERROR_RESPONSE_MESSAGE = "The requested entity is not found.";
 
-
 /**
  * Method to build a Base response to service
  *
