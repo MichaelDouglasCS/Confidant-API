@@ -52,7 +52,8 @@ app.use(
     expressJWT({ secret: jwtSettings.secretOrKey }).unless({
         path: [baseURL + "/users/register",
                baseURL + "/users/authenticate",
-               baseURL + "/users/facebook"]
+               baseURL + "/users/facebook",
+               baseURL + "/users/facebook/callback"]
     })
 );
 
