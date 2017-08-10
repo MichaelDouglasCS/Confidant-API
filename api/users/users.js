@@ -12,7 +12,7 @@
  */
 let mongoose = require("mongoose");
 let ObjectId = require("mongoose").Types.ObjectId;
-var passport = require("passport");
+let capitalize = require("capitalize");
 let jwtSettings = require("../../config/jwt-settings");
 let validator = require("validator");
 let userValidation = require("./users.validation");
@@ -138,7 +138,7 @@ let facebook = function (userReceived) {
         let parsedUser = new User(userReceived._json)
         parsedUser.profile.name = userReceived._json.name
         parsedUser.profile.birthdate = userReceived._json.birthday
-        parsedUser.profile.gender = userReceived._json.gender
+        parsedUser.profile.gender = capitalize.words(userReceived._json.gender)
 
         console.log(" -----------------------------//--------------------------- ");
         console.log(" --------> PARSED USER: " + parsedUser);
