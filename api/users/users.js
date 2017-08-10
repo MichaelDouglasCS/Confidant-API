@@ -27,12 +27,14 @@ let userSchema = mongoose.Schema({
     id: String,
     email: String,
     password: String,
-    name: String,
-    birthdate: String,
-    gender: String,
-    typeOfUser: String,
     createdDate: Number,
-    deviceToken: String
+    deviceToken: String,
+    profile: {
+        name: String,
+        birthdate: String,
+        gender: String,
+        typeOfUser: String
+    }
 });
 
 //Hide "_v", "password" and rename "_id" 
@@ -75,7 +77,7 @@ let register = function (userReceived) {
                                 user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> REGISTERING USER :" + user.name);
+                                console.log(" --------> REGISTERING USER: " + user.profile.name);
                                 console.log(" -----------------------------//--------------------------- ");
                                 user.save()
                                     .then((userRegistered) => {
@@ -134,12 +136,14 @@ let authenticate = function (userReceived) {
 let facebook = function (userReceived) {
     return new Promise((resolve, reject) => {
         let parsedUser = new User(userReceived._json)
-        parsedUser.birthdate = userReceived._json.birthday
+        parsedUser.profile.name = userReceived._json.name
+        parsedUser.profile.birthdate = userReceived._json.birthday
+        parsedUser.profile.gender = userReceived._json.gender
 
         console.log(" -----------------------------//--------------------------- ");
-        console.log(" --------> PARSED USER :" + parsedUser);
+        console.log(" --------> PARSED USER: " + parsedUser);
         console.log(" -----------------------------//--------------------------- ");
-        console.log(" --------> PARSED USER EMAIL :" + parsedUser.email);
+        console.log(" --------> PARSED USER EMAIL: " + parsedUser.email);
         console.log(" -----------------------------//--------------------------- ");
 
         if (!parsedUser.email || parsedUser.email == "") {
@@ -148,7 +152,7 @@ let facebook = function (userReceived) {
             User.findOne({ email: parsedUser.email })
                 .then((userDB) => {
                     console.log(" -----------------------------//--------------------------- ");
-                    console.log(" --------> USER DB :" + userDB);
+                    console.log(" --------> USER DB: " + userDB);
                     console.log(" -----------------------------//--------------------------- ");
                     if (!userDB) {
                         //Register
@@ -156,9 +160,9 @@ let facebook = function (userReceived) {
                         user.createdDate = Date.now()
                         user.deviceToken = generateUserToken(user);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> REGISTERING USER :" + user.name);
+                        console.log(" --------> REGISTERING USER: " + user.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> REGISTERING USER EMAIL :" + user.email);
+                        console.log(" --------> REGISTERING USER EMAIL: " + user.email);
                         console.log(" -----------------------------//--------------------------- ");
                         user.save()
                             .then((userRegistered) => {
@@ -171,7 +175,7 @@ let facebook = function (userReceived) {
                         //Authenticate
                         userDB.deviceToken = generateUserToken(userDB);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> AUTHENTICATING USER :" + userDB.name);
+                        console.log(" --------> AUTHENTICATING USER: " + userDB.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
                         userDB.save()
                             .then((userAuth) => {
@@ -206,7 +210,7 @@ let authUserDevBeta = function (userReceived) {
                     if (userReceived.password == userDB.password) {
                         userDB.deviceToken = generateUserToken(userDB);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> Authenticating User :" + userDB.name);
+                        console.log(" --------> Authenticating User: " + userDB.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
                         userDB.save()
                             .then((userAuth) => {
