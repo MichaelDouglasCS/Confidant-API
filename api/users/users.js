@@ -77,7 +77,7 @@ let register = function (userReceived) {
                                 user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> REGISTERING USER: " + user.name);
+                                console.log(" --------> REGISTERING USER: " + user.profile.name);
                                 console.log(" -----------------------------//--------------------------- ");
                                 user.save()
                                     .then((userRegistered) => {
@@ -160,7 +160,7 @@ let facebook = function (userReceived) {
                         user.createdDate = Date.now()
                         user.deviceToken = generateUserToken(user);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> REGISTERING USER: " + user.name);
+                        console.log(" --------> REGISTERING USER: " + user.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
                         console.log(" --------> REGISTERING USER EMAIL: " + user.email);
                         console.log(" -----------------------------//--------------------------- ");
@@ -175,7 +175,7 @@ let facebook = function (userReceived) {
                         //Authenticate
                         userDB.deviceToken = generateUserToken(userDB);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> AUTHENTICATING USER: " + userDB.name);
+                        console.log(" --------> AUTHENTICATING USER: " + userDB.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
                         userDB.save()
                             .then((userAuth) => {
@@ -210,7 +210,7 @@ let authUserDevBeta = function (userReceived) {
                     if (userReceived.password == userDB.password) {
                         userDB.deviceToken = generateUserToken(userDB);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> Authenticating User: " + userDB.name);
+                        console.log(" --------> Authenticating User: " + userDB.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
                         userDB.save()
                             .then((userAuth) => {
