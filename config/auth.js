@@ -20,7 +20,7 @@ module.exports = {
   facebookAuth: {
     clientID: "1405487309509241",
     clientSecret: "f6104678b4554303d247e11febd53d6f",
-    callbackURL: "http://localhost:3000/confidant/api/v1/users/facebook/callback",
+    callbackURL: "http://localhost:3000/confidant/api/v1/user/facebook/callback",
     profileFields: ["email", "displayName", "birthday", "gender"]
   },
   facebookCallback: facebookCallback
