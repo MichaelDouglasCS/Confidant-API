@@ -1,14 +1,14 @@
-// users.resource.js
+// user.resource.js
 
 var express = require("express");
 var passport = require("passport");
 var router = express.Router();
-var users = require("./users")
-let userValidation = require("./users.validation");
+var user = require("./user")
+let userValidation = require("./user.validation");
 var responseUtils = require("../utils/response.utils");
 
 /**
- * A route method to register the user.
+ * A route method to create the user.
  *
  * @author Michael Douglas
  * @since 26/07/2017
@@ -17,9 +17,9 @@ var responseUtils = require("../utils/response.utils");
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post("/register", (req, res) => {
-    let user = req.body;
-    users.register(user)
+router.post("/", (req, res) => {
+    let userReceived = req.body;
+    user.create(userReceived)
         .then((userAuth) => {
             let responseObj = responseUtils.buildBaseResponse();
             responseObj.user = userAuth;
@@ -41,8 +41,8 @@ router.post("/register", (req, res) => {
  *
  */
 router.post("/authenticate", (req, res) => {
-    let user = req.body;
-    users.authenticate(user)
+    let userReceived = req.body;
+    user.authenticate(userReceived)
         .then((userAuth) => {
             let responseObj = responseUtils.buildBaseResponse();
             responseObj.user = userAuth;
@@ -54,7 +54,7 @@ router.post("/authenticate", (req, res) => {
 });
 
 /**
- * A route method to Register or Authenticate the user by Facebook.
+ * A route method to Create or Authenticate the user by Facebook.
  *
  * @author Michael Douglas
  * @since 02/08/2017
@@ -70,7 +70,7 @@ router.get("/facebook/callback", (req, res) => {
         if (err || !userFB) {
             res.status(userValidation.facebookError().status).json(userValidation.facebookError());
         } else {
-            users.facebook(userFB)
+            user.facebook(userFB)
                 .then((userAuth) => {
                     let responseObj = responseUtils.buildBaseResponse();
                     responseObj.user = userAuth;

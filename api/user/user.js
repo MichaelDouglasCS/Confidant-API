@@ -12,10 +12,10 @@
  */
 let mongoose = require("mongoose");
 let ObjectId = require("mongoose").Types.ObjectId;
-var passport = require("passport");
+let capitalize = require("capitalize");
 let jwtSettings = require("../../config/jwt-settings");
 let validator = require("validator");
-let userValidation = require("./users.validation");
+let userValidation = require("./user.validation");
 let jwt = require("jsonwebtoken");
 let CryptoJS = require("crypto-js");
 let Schema = mongoose.Schema;
@@ -51,7 +51,7 @@ let User = mongoose.model("User", userSchema);
 
 // ----- PUBLIC METHODS ------- //
 /**
- * Register a new user
+ * Create a new user
  *
  * @author Michael Douglas
  * @since 31/07/2017
@@ -60,7 +60,7 @@ let User = mongoose.model("User", userSchema);
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-let register = function (userReceived) {
+let create = function (userReceived) {
     return new Promise((resolve, reject) => {
         if (!userReceived.email || !validator.isEmail(userReceived.email)) {
             reject(userValidation.emailIsNotValid());
@@ -77,14 +77,14 @@ let register = function (userReceived) {
                                 user.createdDate = Date.now()
                                 user.deviceToken = generateUserToken(user);
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> REGISTERING USER: " + user.profile.name);
+                                console.log(" --------> CREATING USER: " + user.profile.name);
                                 console.log(" -----------------------------//--------------------------- ");
                                 user.save()
-                                    .then((userRegistered) => {
+                                    .then((userCreated) => {
                                         console.log(" -----------------------------//--------------------------- ");
-                                        console.log(" --------> USER REGISTERED...");
+                                        console.log(" --------> USER CREATED...");
                                         console.log(" -----------------------------//--------------------------- ");
-                                        resolve(userRegistered);
+                                        resolve(userCreated);
                                     }).catch(err => reject(err));
                             });
                     }
@@ -124,7 +124,7 @@ let authenticate = function (userReceived) {
 };
 
 /**
- * Register or Authenticate an user by Facebook
+ * Create or Authenticate an user by Facebook
  *
  * @author Michael Douglas
  * @since 03/08/2017
@@ -138,7 +138,7 @@ let facebook = function (userReceived) {
         let parsedUser = new User(userReceived._json)
         parsedUser.profile.name = userReceived._json.name
         parsedUser.profile.birthdate = userReceived._json.birthday
-        parsedUser.profile.gender = userReceived._json.gender
+        parsedUser.profile.gender = capitalize.words(userReceived._json.gender)
 
         console.log(" -----------------------------//--------------------------- ");
         console.log(" --------> PARSED USER: " + parsedUser);
@@ -155,21 +155,21 @@ let facebook = function (userReceived) {
                     console.log(" --------> USER DB: " + userDB);
                     console.log(" -----------------------------//--------------------------- ");
                     if (!userDB) {
-                        //Register
+                        //Create
                         let user = new User(parsedUser);
                         user.createdDate = Date.now()
                         user.deviceToken = generateUserToken(user);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> REGISTERING USER: " + user.profile.name);
+                        console.log(" --------> CREATING USER: " + user.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
-                        console.log(" --------> REGISTERING USER EMAIL: " + user.email);
+                        console.log(" --------> CREATING USER EMAIL: " + user.email);
                         console.log(" -----------------------------//--------------------------- ");
                         user.save()
-                            .then((userRegistered) => {
+                            .then((userCreated) => {
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> USER REGISTERED...");
+                                console.log(" --------> USER CREATED...");
                                 console.log(" -----------------------------//--------------------------- ");
-                                resolve(userRegistered);
+                                resolve(userCreated);
                             }).catch(err => reject(err));
                     } else {
                         //Authenticate
@@ -273,7 +273,7 @@ let decrypt = function (stringToDecrypt) {
 
 // ----- MODULE EXPORTS -------- //
 module.exports = {
-    register: register,
+    create: create,
     authenticate: authenticate,
     facebook: facebook
 };
