@@ -11,7 +11,7 @@ var responseUtils = require("./api/utils/response.utils");
 var jwtSettings = require("./config/jwt-settings");
 var databaseConfig = require("./config/database");
 var configAuth = require("./config/auth");
-var users = require("./api/users/users.resources");
+var user = require("./api/user/user.resources");
 var app = express();
 
 //BaseURL
@@ -50,15 +50,15 @@ passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCa
 //Middleware
 app.use(
     expressJWT({ secret: jwtSettings.secretOrKey }).unless({
-        path: [baseURL + "/users/register",
-               baseURL + "/users/authenticate",
-               baseURL + "/users/facebook",
-               baseURL + "/users/facebook/callback"]
+        path: [baseURL + "/user",
+               baseURL + "/user/authenticate",
+               baseURL + "/user/facebook",
+               baseURL + "/user/facebook/callback"]
     })
 );
 
 //Unprotected Routes
-app.use(baseURL + "/users", users);
+app.use(baseURL + "/user", user);
 
 //Catch 404 and forward to error handler
 app.use(function (req, res, next) {
