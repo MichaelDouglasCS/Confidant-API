@@ -28,7 +28,7 @@ let userSchema = mongoose.Schema({
     email: String,
     password: String,
     createdDate: Number,
-    deviceToken: String,
+    token: String,
     profile: {
         name: String,
         birthdate: String,
@@ -75,7 +75,7 @@ let create = function (userReceived) {
                                 let user = new User(userReceived);
                                 user.password = passDecrypted;
                                 user.createdDate = Date.now()
-                                user.deviceToken = generateUserToken(user);
+                                user.token = generateUserToken(user);
                                 console.log(" -----------------------------//--------------------------- ");
                                 console.log(" --------> CREATING USER: " + user.profile.name);
                                 console.log(" -----------------------------//--------------------------- ");
@@ -158,7 +158,7 @@ let facebook = function (userReceived) {
                         //Create
                         let user = new User(parsedUser);
                         user.createdDate = Date.now()
-                        user.deviceToken = generateUserToken(user);
+                        user.token = generateUserToken(user);
                         console.log(" -----------------------------//--------------------------- ");
                         console.log(" --------> CREATING USER: " + user.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
@@ -173,7 +173,7 @@ let facebook = function (userReceived) {
                             }).catch(err => reject(err));
                     } else {
                         //Authenticate
-                        userDB.deviceToken = generateUserToken(userDB);
+                        userDB.token = generateUserToken(userDB);
                         console.log(" -----------------------------//--------------------------- ");
                         console.log(" --------> AUTHENTICATING USER: " + userDB.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
@@ -208,7 +208,7 @@ let authUserDevBeta = function (userReceived) {
                     reject(userValidation.userNotFound());
                 } else {
                     if (userReceived.password == userDB.password) {
-                        userDB.deviceToken = generateUserToken(userDB);
+                        userDB.token = generateUserToken(userDB);
                         console.log(" -----------------------------//--------------------------- ");
                         console.log(" --------> Authenticating User: " + userDB.profile.name);
                         console.log(" -----------------------------//--------------------------- ");
@@ -240,7 +240,7 @@ let authUserDevBeta = function (userReceived) {
  *
  */
 let generateUserToken = function (userReceived) {
-    userReceived.deviceToken = null;
+    userReceived.token = null;
     let token = jwt.sign(userReceived, jwtSettings.secretOrKey);
     return token;
 }
