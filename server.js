@@ -62,7 +62,11 @@ app.use(baseURL + "/user", user);
 
 //Catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    res.status(404).json(responseUtils.buildNotFoundResponse());
+    if (err.name === "UnauthorizedError") {
+        res.status(404).json(responseUtils.buildTokenNotFoundResponse());
+    } else {
+        res.status(404).json(responseUtils.buildNotFoundResponse());
+    }
 });
 
 console.log("Confidant API server started.");

@@ -30,6 +30,7 @@
     "morgan": "^1.8.2",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
+    "query-string": "^5.0.0",
     "validator": "^8.0.0"
   },
   "devDependencies": {
