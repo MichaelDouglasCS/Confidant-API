@@ -9,7 +9,7 @@ const NOT_FOUND_ERROR_RESPONSE_CODE = 404;
 const NOT_FOUND_ERROR_RESPONSE_MESSAGE = "The requested method were not found.";
 
 const INVALID_TOKEN_ERROR_RESPONSE_CODE = 403;
-const INVALID_TOKEN_ERROR_RESPONSE_MESSAGE = "Informed token is invalid or expired.";
+const INVALID_TOKEN_ERROR_RESPONSE_MESSAGE = "Informed token is invalid.";
 
 const TOKEN_NOT_FOUND_ERROR_RESPONSE_CODE = 403;
 const TOKEN_NOT_FOUND_ERROR_RESPONSE_MESSAGE = "Access forbidden, no token informed.";
