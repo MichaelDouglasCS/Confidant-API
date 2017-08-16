@@ -1,6 +1,7 @@
 // user.resource.js
 
 var express = require("express");
+var queryString = require('query-string');
 var passport = require("passport");
 var router = express.Router();
 var user = require("./user")
@@ -68,16 +69,17 @@ router.get("/facebook", passport.authenticate("facebook", { scope: ["public_prof
 router.get("/facebook/callback", (req, res) => {
     passport.authenticate("facebook", (err, userFB, info) => {
         if (err || !userFB) {
-            res.status(userValidation.facebookError().status).json(userValidation.facebookError());
+            res.status(userValidation.facebookError().status).redirect("confidant://facebookUser/error/");
         } else {
             user.facebook(userFB)
                 .then((userAuth) => {
                     let responseObj = responseUtils.buildBaseResponse();
                     responseObj.user = userAuth;
-                    res.status(200).json(responseObj);
+                    var userParams = queryString.stringify(responseObj);
+                    res.status(200).redirect("confidant://facebookUser/user/" + userParams);
                 }).catch((error) => {
                     let httpCode = error.status || 500;
-                    res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+                    res.status(httpCode).redirect("confidant://facebookUser/error/");
                 });
         }
     })(req, res);
