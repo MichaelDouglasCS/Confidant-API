@@ -75,7 +75,7 @@ router.get("/facebook/callback", (req, res) => {
                 .then((userAuth) => {
                     let responseObj = responseUtils.buildBaseResponse();
                     responseObj.user = userAuth;
-                    var userParams = queryString.stringify(responseObj);
+                    var userParams = queryString.stringify(userAuth);
                     res.status(200).redirect("confidant://facebookUser/user/" + userParams);
                 }).catch((error) => {
                     let httpCode = error.status || 500;
