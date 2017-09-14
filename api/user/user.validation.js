@@ -26,7 +26,6 @@ let validator = require("validator");
  */
 let userNotFound = function() {
     let errors = { status: 401 };
-    errors.errorCode = 401;
     errors.errorMessage = "Incorrect email or password.";
     return errors;
 };
@@ -42,8 +41,7 @@ let userNotFound = function() {
  *
  */
 let emailIsNotValid = function() {
-    let errors = { status: 401 };
-    errors.errorCode = 402;
+    let errors = { status: 402 };
     errors.errorMessage = "Please, fill the field with a valid email.";
     return errors;
 };
@@ -59,8 +57,7 @@ let emailIsNotValid = function() {
  *
  */
 let emailAlreadyInUse = function() {
-    let errors = { status: 401 };
-    errors.errorCode = 403;
+    let errors = { status: 403 };
     errors.errorMessage = "The email is already in use.";
     return errors;
 };
@@ -76,8 +73,7 @@ let emailAlreadyInUse = function() {
  *
  */
 let emailNotFound = function() {
-    let errors = { status: 401 };
-    errors.errorCode = 404;
+    let errors = { status: 404 };
     errors.errorMessage = "Sorry! Not was possible get the email.";
     return errors;
 };
@@ -93,8 +89,7 @@ let emailNotFound = function() {
  *
  */
 let facebookError = function() {
-    let errors = { status: 401 };
-    errors.errorCode = 405;
+    let errors = { status: 405 };
     errors.errorMessage = "Sorry! Occurred an error on Facebook, please, try again.";
     return errors;
 };
@@ -110,8 +105,7 @@ let facebookError = function() {
  *
  */
 let internalError = function() {
-    let errors = { status: 401 };
-    errors.errorCode = 406;
+    let errors = { status: 406 };
     errors.errorMessage = "Internal Error.";
     return errors;
 };
