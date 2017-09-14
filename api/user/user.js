@@ -73,6 +73,7 @@ let create = function (userReceived) {
                         decrypt(userReceived.password)
                             .then((passDecrypted) => {
                                 let user = new User(userReceived);
+                                user.id = mongoose.Types.ObjectId();
                                 user.password = passDecrypted;
                                 user.createdDate = Date.now()
                                 user.token = generateUserToken(user);
