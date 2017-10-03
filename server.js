@@ -1,5 +1,6 @@
 var express = require("express");
 var expressJWT = require("express-jwt");
+var jwt = require("jsonwebtoken");
 var passport = require("passport");
 var FacebookStrategy = require("passport-facebook").Strategy;
 var logger = require("morgan");
@@ -48,25 +49,60 @@ app.use(passport.initialize());
 passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCallback));
 
 //Middleware
-app.use(
-    expressJWT({ secret: jwtSettings.secretOrKey }).unless({
-        path: [baseURL + "/user",
-               baseURL + "/user/authenticate",
-               baseURL + "/user/facebook",
-               baseURL + "/user/facebook/callback"]
-    })
-);
+// app.use(
+//     expressJWT({ secret: jwtSettings.secretOrKey }).unless({
+//         path: [baseURL + "/user",
+//         baseURL + "/user/authenticate",
+//         baseURL + "/user/facebook",
+//         baseURL + "/user/facebook/callback"]
+//     })
+// );
+
+//Middleware for User
+app.use(function (req, res, next) {
+
+    //check if it's user endpoint
+    let isUsersEndpoint = req.url.indexOf("/user") !== -1;
+    if (isUsersEndpoint) {
+        let isUser = req.url.indexOf("/user") !== -1;
+        let isAuthenticate = req.url.indexOf("/user/authenticate") !== -1;
+        let isFacebook = req.url.indexOf("/user/facebook") !== -1;
+        let isFacebookCallback = req.url.indexOf("/user/facebook/callback") !== -1;
+
+        if (isAuthenticate || isFacebook || isFacebookCallback) {
+            return next();
+        } else if (isUser) {
+
+            if (req.method == "POST") {
+                return next();
+            }
+        }
+    }
+
+    // check header or url parameters or post parameters for token
+    var token = req.body.token || req.query.token || req.headers["authorization"];
+
+    if (token && token != "" && token.split(' ')[0] === "Bearer") {
+        jwt.verify(token.split(' ')[1], jwtSettings.secretOrKey, function (err, decoded) {
+            if (err) {
+                return res.status(404).json(responseUtils.buildInvalidTokenResponse());
+            } else {
+                // if everything is good, save to request for use in other routes
+                req.decoded = decoded;
+                next();
+            }
+        });
+    } else {
+        return res.status(404).json(responseUtils.buildTokenNotFoundResponse());
+    }
+});
 
 //Unprotected Routes
 app.use(baseURL + "/user", user);
 
 //Catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    if (err.name === "UnauthorizedError") {
-        res.status(404).json(responseUtils.buildTokenNotFoundResponse());
-    } else {
-        res.status(404).json(responseUtils.buildNotFoundResponse());
-    }
+    res.status(404).json(responseUtils.buildNotFoundResponse());
 });
 
 console.log("Confidant API server started.");

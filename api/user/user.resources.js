@@ -32,6 +32,28 @@ router.post("/", (req, res) => {
 });
 
 /**
+ * A route method to create the user.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.put("/", (req, res) => {
+    let userReceived = req.body;
+    user.update(userReceived)
+        .then( _ => {
+            let responseObj = responseUtils.buildBaseResponse();
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
+
+/**
  * A route method to authenticate the user.
  *
  * @author Michael Douglas
