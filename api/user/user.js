@@ -31,6 +31,7 @@ let userSchema = mongoose.Schema({
     token: String,
     profile: {
         name: String,
+        nickname: String,
         birthdate: String,
         gender: String,
         typeOfUser: String
@@ -91,6 +92,29 @@ let create = function (userReceived) {
                     }
                 }).catch(err => reject(err));
         }
+    });
+};
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Update a new user
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let update = function (userReceived) {
+    return new Promise((resolve, reject) => {
+        User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
+            .then( _ => {
+                console.log(" -----------------------------//--------------------------- ");
+                console.log(" --------> USER UPDATED: " + userReceived.profile.name);
+                console.log(" -----------------------------//--------------------------- ");
+                resolve()
+            }).catch(err => reject(err));
     });
 };
 
@@ -275,6 +299,7 @@ let decrypt = function (stringToDecrypt) {
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     create: create,
+    update: update,
     authenticate: authenticate,
     facebook: facebook
 };
