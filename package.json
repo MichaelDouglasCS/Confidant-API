@@ -23,6 +23,7 @@
     "enum": "^2.4.0",
     "express": "^4.15.4",
     "express-jwt": "^5.3.0",
+    "firebase-admin": "^5.4.0",
     "jsonwebtoken": "^7.4.2",
     "mongodb": "^2.2.31",
     "mongoose": "^4.10.8",

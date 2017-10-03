@@ -14,6 +14,7 @@ let mongoose = require("mongoose");
 let ObjectId = require("mongoose").Types.ObjectId;
 let capitalize = require("capitalize");
 let jwtSettings = require("../../config/jwt-settings");
+let firebaseStorage = require("../../config/firebase-storage");
 let validator = require("validator");
 let userValidation = require("./user.validation");
 let jwt = require("jsonwebtoken");
@@ -109,12 +110,28 @@ let create = function (userReceived) {
 let update = function (userReceived) {
     return new Promise((resolve, reject) => {
         User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
-            .then( _ => {
-                console.log(" -----------------------------//--------------------------- ");
-                console.log(" --------> USER UPDATED: " + userReceived.profile.name);
-                console.log(" -----------------------------//--------------------------- ");
-                resolve()
-            }).catch(err => reject(err));
+        .then(_ => {
+            console.log(" -----------------------------//--------------------------- ");
+            console.log(" --------> USER UPDATED: " + userReceived.profile.name);
+            console.log(" -----------------------------//--------------------------- ");
+            resolve()
+        }).catch(err => reject(err));
+
+        // Upload a local file to a new file to be created in your bucket.
+        // firebaseStorage.bucket.upload("./config/image.jpg", function (err, file) {
+        //     if (!err) {
+
+        //         firebaseStorage.bucket.file(file.name).getSignedUrl({
+        //             action: "read",
+        //             expires: "03-09-2491"
+        //           }).then(signedUrls => {
+        //             console.log(signedUrls[0])
+
+        //           });
+        //     } else {
+        //         reject(err)
+        //     }
+        // });
     });
 };
 

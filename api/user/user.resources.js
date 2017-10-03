@@ -4,7 +4,7 @@ var express = require("express");
 var queryString = require('query-string');
 var passport = require("passport");
 var router = express.Router();
-var user = require("./user")
+var user = require("./user");
 let userValidation = require("./user.validation");
 var responseUtils = require("../utils/response.utils");
 
