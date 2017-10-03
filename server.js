@@ -79,13 +79,13 @@ app.use(function (req, res, next) {
         }
     }
 
-    // check header or url parameters or post parameters for token
-    var token = req.body.token || req.query.token || req.headers["authorization"];
+    // check header for token
+    var token = req.headers["authorization"];
 
     if (token && token != "" && token.split(' ')[0] === "Bearer") {
         jwt.verify(token.split(' ')[1], jwtSettings.secretOrKey, function (err, decoded) {
             if (err) {
-                return res.status(404).json(responseUtils.buildInvalidTokenResponse());
+                return res.status(408).json(responseUtils.buildInvalidTokenResponse());
             } else {
                 // if everything is good, save to request for use in other routes
                 req.decoded = decoded;
@@ -93,7 +93,7 @@ app.use(function (req, res, next) {
             }
         });
     } else {
-        return res.status(404).json(responseUtils.buildTokenNotFoundResponse());
+        return res.status(407).json(responseUtils.buildTokenNotFoundResponse());
     }
 });
 

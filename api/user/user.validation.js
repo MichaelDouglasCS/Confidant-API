@@ -110,6 +110,38 @@ let internalError = function() {
     return errors;
 };
 
+/**
+ * A method to throw an exception when token not were informed.
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let tokenNotInformed = function() {
+    let errors = { status: 407 };
+    errors.errorMessage = "Access forbidden, no token informed.";
+    return errors;
+};
+
+/**
+ * A method to throw an exception when token were invalid.
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let invalidToken = function() {
+    let errors = { status: 408 };
+    errors.errorMessage = "Informed token is invalid.";
+    return errors;
+};
+
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     userNotFound: userNotFound,
