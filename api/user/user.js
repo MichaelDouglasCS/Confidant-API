@@ -11,13 +11,13 @@
  *
  */
 let mongoose = require("mongoose");
-let ObjectId = require("mongoose").Types.ObjectId;
 let capitalize = require("capitalize");
 let jwtSettings = require("../../config/jwt-settings");
 let firebaseStorage = require("../../config/firebase-storage");
 let validator = require("validator");
 let userValidation = require("./user.validation");
 let jwt = require("jsonwebtoken");
+var fs = require("fs");
 let CryptoJS = require("crypto-js");
 let Schema = mongoose.Schema;
 
@@ -33,6 +33,7 @@ let userSchema = mongoose.Schema({
     profile: {
         name: String,
         nickname: String,
+        pictureURL: String,
         birthdate: String,
         gender: String,
         typeOfUser: String
@@ -110,28 +111,58 @@ let create = function (userReceived) {
 let update = function (userReceived) {
     return new Promise((resolve, reject) => {
         User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
-        .then(_ => {
-            console.log(" -----------------------------//--------------------------- ");
-            console.log(" --------> USER UPDATED: " + userReceived.profile.name);
-            console.log(" -----------------------------//--------------------------- ");
-            resolve()
-        }).catch(err => reject(err));
+            .then(_ => {
+                console.log(" -----------------------------//--------------------------- ");
+                console.log(" --------> USER UPDATED: " + userReceived.profile.name);
+                console.log(" -----------------------------//--------------------------- ");
+                resolve()
+            }).catch(err => reject(err));
+    });
+};
 
-        // Upload a local file to a new file to be created in your bucket.
-        // firebaseStorage.bucket.upload("./config/image.jpg", function (err, file) {
-        //     if (!err) {
+// ----- PUBLIC METHODS ------- //
+/**
+ * Upload Picture
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+let uploadPicture = function (file) {
+    return new Promise((resolve, reject) => {
+        var oldPath = file.path;
+        var path = __dirname + "/temp/" + file.originalname;
 
-        //         firebaseStorage.bucket.file(file.name).getSignedUrl({
-        //             action: "read",
-        //             expires: "03-09-2491"
-        //           }).then(signedUrls => {
-        //             console.log(signedUrls[0])
+        //Storage Picture Temporary to Upload
+        fs.rename(oldPath, path, function (err) {
+            if (err) {
+                reject(err)
+            } else {
 
-        //           });
-        //     } else {
-        //         reject(err)
-        //     }
-        // });
+                // Upload a local file to a new file to be created in your bucket.
+                firebaseStorage.bucket.upload(path, { destination: "/UsersPicture/" + file.originalname }, function (err, file) {
+                    if (!err) {
+                        firebaseStorage.bucket.file(file.name).getSignedUrl({
+                            action: "read",
+                            expires: "03-09-2491"
+                        }).then(signedUrls => {
+                            console.log(" -----------------------------//--------------------------- ");
+                            console.log(" --------> UPLOAD PICTURE TO: " + file.name);
+                            console.log(" -----------------------------//--------------------------- ");
+                            resolve(signedUrls[0])
+
+                            //Remove Picture Storaged
+                            fs.unlinkSync(path);
+                        });
+                    } else {
+                        reject(err)
+                    }
+                });
+            }
+        });
     });
 };
 
@@ -317,6 +348,7 @@ let decrypt = function (stringToDecrypt) {
 module.exports = {
     create: create,
     update: update,
+    uploadPicture: uploadPicture,
     authenticate: authenticate,
     facebook: facebook
 };

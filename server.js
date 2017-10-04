@@ -65,12 +65,15 @@ app.use(function (req, res, next) {
     let isUsersEndpoint = req.url.indexOf("/user") !== -1;
     if (isUsersEndpoint) {
         let isUser = req.url.indexOf("/user") !== -1;
+        let isUserPicture = req.url.indexOf("/user/picture") !== -1;
         let isAuthenticate = req.url.indexOf("/user/authenticate") !== -1;
         let isFacebook = req.url.indexOf("/user/facebook") !== -1;
         let isFacebookCallback = req.url.indexOf("/user/facebook/callback") !== -1;
 
         if (isAuthenticate || isFacebook || isFacebookCallback) {
             return next();
+        } else if (isUserPicture) {
+
         } else if (isUser) {
 
             if (req.method == "POST") {
@@ -97,7 +100,7 @@ app.use(function (req, res, next) {
     }
 });
 
-//Unprotected Routes
+//Protected Routes
 app.use(baseURL + "/user", user);
 
 //Catch 404 and forward to error handler
