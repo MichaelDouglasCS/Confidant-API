@@ -51,10 +51,10 @@ router.get("/facebook/callback", (req, res) => {
                 .then((userAuth) => {
                     let responseObj = userAuth;
                     var userParams = JSON.stringify(responseObj);
-                    res.status(200).redirect("confidant://facebookUser/user/" + userParams);
+                    res.status(200).redirect("confidant://facebook/user/" + userParams);
                 }).catch((error) => {
                     let httpCode = error.status || 500;
-                    res.status(httpCode).redirect("confidant://facebookUser/error/");
+                    res.status(httpCode).redirect("confidant://facebook/error/");
                 });
         }
     })(req, res);
