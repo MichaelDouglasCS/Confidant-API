@@ -5,14 +5,18 @@ var passport = require("passport");
 var FacebookStrategy = require("passport-facebook").Strategy;
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
 var compression = require("compression");
+
 var responseUtils = require("./api/utils/response.utils");
 var jwtSettings = require("./config/jwt-settings");
+var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
 var databaseConfig = require("./config/database");
 var configAuth = require("./config/auth");
+
 var user = require("./api/user/user.resources");
+var media = require("./api/media/media.resources");
+
 var app = express();
 
 //BaseURL
@@ -97,8 +101,9 @@ app.use(function (req, res, next) {
     }
 });
 
-//Unprotected Routes
+//Protected Routes
 app.use(baseURL + "/user", user);
+app.use(baseURL + "/media", media);
 
 //Catch 404 and forward to error handler
 app.use(function (req, res, next) {

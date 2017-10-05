@@ -13,8 +13,8 @@
 let Enum = require("enum");
 
 let TypeOfUser = new Enum({
-    USER: "user",
-    CONFIDANT: "confidant"
+    USER: "User",
+    CONFIDANT: "Confidant"
 });
 
 module.exports = {
