@@ -1,57 +1,12 @@
 // user.resource.js
 
 var express = require("express");
-var queryString = require('query-string');
+var queryString = require("query-string");
 var passport = require("passport");
 var router = express.Router();
-var user = require("./user")
+var user = require("./user");
 let userValidation = require("./user.validation");
 var responseUtils = require("../utils/response.utils");
-
-/**
- * A route method to create the user.
- *
- * @author Michael Douglas
- * @since 26/07/2017
- *
- * History:
- * 26/07/2017 - Michael Douglas - Initial creation.
- *
- */
-router.post("/", (req, res) => {
-    let userReceived = req.body;
-    user.create(userReceived)
-        .then((userAuth) => {
-            let responseObj = responseUtils.buildBaseResponse();
-            responseObj.user = userAuth;
-            res.status(200).json(responseObj);
-        }).catch((error) => {
-            let httpCode = error.status || 500;
-            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
-        });
-});
-
-/**
- * A route method to create the user.
- *
- * @author Michael Douglas
- * @since 26/07/2017
- *
- * History:
- * 26/07/2017 - Michael Douglas - Initial creation.
- *
- */
-router.put("/", (req, res) => {
-    let userReceived = req.body;
-    user.update(userReceived)
-        .then( _ => {
-            let responseObj = responseUtils.buildBaseResponse();
-            res.status(200).json(responseObj);
-        }).catch((error) => {
-            let httpCode = error.status || 500;
-            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
-        });
-});
 
 /**
  * A route method to authenticate the user.
@@ -67,8 +22,7 @@ router.post("/authenticate", (req, res) => {
     let userReceived = req.body;
     user.authenticate(userReceived)
         .then((userAuth) => {
-            let responseObj = responseUtils.buildBaseResponse();
-            responseObj.user = userAuth;
+            let responseObj = userAuth;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
@@ -95,8 +49,7 @@ router.get("/facebook/callback", (req, res) => {
         } else {
             user.facebook(userFB)
                 .then((userAuth) => {
-                    let responseObj = responseUtils.buildBaseResponse();
-                    responseObj.user = userAuth;
+                    let responseObj = userAuth;
                     var userParams = JSON.stringify(responseObj);
                     res.status(200).redirect("confidant://facebookUser/user/" + userParams);
                 }).catch((error) => {
@@ -105,6 +58,72 @@ router.get("/facebook/callback", (req, res) => {
                 });
         }
     })(req, res);
+});
+
+/**
+ * A route method to create the user.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.post("/", (req, res) => {
+    let userReceived = req.body;
+    user.create(userReceived)
+        .then((userAuth) => {
+            let responseObj = userAuth;
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
+
+/**
+ * A route method to Update the user.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.put("/", (req, res) => {
+    let userReceived = req.body;
+    user.update(userReceived)
+        .then(_ => {
+            let responseObj = responseUtils.buildBaseResponse();
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
+
+/**
+ * A route method to Load the user by email.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.get("/:email", (req, res) => {
+    let userEmail = req.params.email;
+    user.load(userEmail)
+        .then((userLoaded) => {
+            let responseObj = userLoaded;
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
 });
 
 module.exports = router;
