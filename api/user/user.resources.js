@@ -5,8 +5,6 @@ var queryString = require("query-string");
 var passport = require("passport");
 var router = express.Router();
 var user = require("./user");
-var multer = require("multer");
-var upload = multer({ dest: __dirname + "/temp" });
 let userValidation = require("./user.validation");
 var responseUtils = require("../utils/response.utils");
 
@@ -24,8 +22,7 @@ router.post("/authenticate", (req, res) => {
     let userReceived = req.body;
     user.authenticate(userReceived)
         .then((userAuth) => {
-            let responseObj = responseUtils.buildBaseResponse();
-            responseObj.user = userAuth;
+            let responseObj = userAuth;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
@@ -52,8 +49,7 @@ router.get("/facebook/callback", (req, res) => {
         } else {
             user.facebook(userFB)
                 .then((userAuth) => {
-                    let responseObj = responseUtils.buildBaseResponse();
-                    responseObj.user = userAuth;
+                    let responseObj = userAuth;
                     var userParams = JSON.stringify(responseObj);
                     res.status(200).redirect("confidant://facebookUser/user/" + userParams);
                 }).catch((error) => {
@@ -78,8 +74,7 @@ router.post("/", (req, res) => {
     let userReceived = req.body;
     user.create(userReceived)
         .then((userAuth) => {
-            let responseObj = responseUtils.buildBaseResponse();
-            responseObj.user = userAuth;
+            let responseObj = userAuth;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
@@ -110,7 +105,7 @@ router.put("/", (req, res) => {
 });
 
 /**
- * A route method to upload User Profile Picture.
+ * A route method to Load the user by email.
  *
  * @author Michael Douglas
  * @since 26/07/2017
@@ -119,13 +114,11 @@ router.put("/", (req, res) => {
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post("/picture", upload.single("picture"), (req, res) => {
-
-    //Upload Picture
-    user.uploadPicture(req.file)
-        .then((pictureURL) => {
-            let responseObj = responseUtils.buildBaseResponse();
-            responseObj.pictureURL = pictureURL;
+router.get("/:email", (req, res) => {
+    let userEmail = req.params.email;
+    user.load(userEmail)
+        .then((userLoaded) => {
+            let responseObj = userLoaded;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;

@@ -10,21 +10,19 @@
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-let mongoose = require("mongoose");
-let capitalize = require("capitalize");
-let jwtSettings = require("../../config/jwt-settings");
-let firebaseStorage = require("../../config/firebase-storage");
-let validator = require("validator");
-let userValidation = require("./user.validation");
-let jwt = require("jsonwebtoken");
-var fs = require("fs");
-let CryptoJS = require("crypto-js");
-let Schema = mongoose.Schema;
+var mongoose = require("mongoose");
+var capitalize = require("capitalize");
+var jwtSettings = require("../../config/jwt-settings");
+var validator = require("validator");
+var userValidation = require("./user.validation");
+var jwt = require("jsonwebtoken");
+var CryptoJS = require("crypto-js");
+var Schema = mongoose.Schema;
 
-let typeOfUserEnum = require("./userType.enum");
+var typeOfUserEnum = require("./userType.enum");
 
 // ------ MODEL --------- //
-let userSchema = mongoose.Schema({
+var userSchema = mongoose.Schema({
     id: String,
     email: String,
     password: String,
@@ -50,7 +48,7 @@ userSchema.set("toJSON", {
     }
 });
 
-let User = mongoose.model("User", userSchema);
+var User = mongoose.model("User", userSchema);
 
 // ----- PUBLIC METHODS ------- //
 /**
@@ -63,7 +61,7 @@ let User = mongoose.model("User", userSchema);
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-let create = function (userReceived) {
+var create = function (userReceived) {
     return new Promise((resolve, reject) => {
         if (!userReceived.email || !validator.isEmail(userReceived.email)) {
             reject(userValidation.emailIsNotValid());
@@ -75,7 +73,7 @@ let create = function (userReceived) {
                     } else {
                         decrypt(userReceived.password)
                             .then((passDecrypted) => {
-                                let user = new User(userReceived);
+                                var user = new User(userReceived);
                                 user.id = mongoose.Types.ObjectId();
                                 user.password = passDecrypted;
                                 user.createdDate = Date.now()
@@ -97,75 +95,6 @@ let create = function (userReceived) {
     });
 };
 
-// ----- PUBLIC METHODS ------- //
-/**
- * Update a new user
- *
- * @author Michael Douglas
- * @since 31/07/2017
- *
- * History:
- * 31/07/2017 - Michael Douglas - Initial creation.
- *
- */
-let update = function (userReceived) {
-    return new Promise((resolve, reject) => {
-        User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
-            .then(_ => {
-                console.log(" -----------------------------//--------------------------- ");
-                console.log(" --------> USER UPDATED: " + userReceived.profile.name);
-                console.log(" -----------------------------//--------------------------- ");
-                resolve()
-            }).catch(err => reject(err));
-    });
-};
-
-// ----- PUBLIC METHODS ------- //
-/**
- * Upload Picture
- *
- * @author Michael Douglas
- * @since 31/07/2017
- *
- * History:
- * 31/07/2017 - Michael Douglas - Initial creation.
- *
- */
-let uploadPicture = function (file) {
-    return new Promise((resolve, reject) => {
-        var oldPath = file.path;
-        var path = __dirname + "/temp/" + file.originalname;
-
-        //Storage Picture Temporary to Upload
-        fs.rename(oldPath, path, function (err) {
-            if (err) {
-                reject(err)
-            } else {
-
-                // Upload a local file to a new file to be created in your bucket.
-                firebaseStorage.bucket.upload(path, { destination: "/UsersPicture/" + file.originalname }, function (err, file) {
-                    if (!err) {
-                        firebaseStorage.bucket.file(file.name).getSignedUrl({
-                            action: "read",
-                            expires: "03-09-2491"
-                        }).then(signedUrls => {
-                            console.log(" -----------------------------//--------------------------- ");
-                            console.log(" --------> UPLOAD PICTURE TO: " + file.name);
-                            console.log(" -----------------------------//--------------------------- ");
-                            resolve(signedUrls[0])
-
-                            //Remove Picture Storaged
-                            fs.unlinkSync(path);
-                        });
-                    } else {
-                        reject(err)
-                    }
-                });
-            }
-        });
-    });
-};
-
 /**
  * Authenticate the user
  *
@@ -176,7 +105,7 @@ let uploadPicture = function (file) {
  * 27/07/2017 - Michael Douglas - Initial creation.
  *
  */
-let authenticate = function (userReceived) {
+var authenticate = function (userReceived) {
     return new Promise((resolve, reject) => {
         decrypt(userReceived.password)
             .then((passDecrypted) => {
@@ -187,7 +116,7 @@ let authenticate = function (userReceived) {
                 } else {
                     authUserDevBeta(userReceived)
                         .then((userAuth) => {
-                            delete userAuth.password;
+                            userAuth.password = undefined;
                             resolve(userAuth);
                         }).catch(err => reject(err));
                 }
@@ -206,9 +135,9 @@ let authenticate = function (userReceived) {
  * 03/08/2017 - Michael Douglas - Initial creation.
  *
  */
-let facebook = function (userReceived) {
+var facebook = function (userReceived) {
     return new Promise((resolve, reject) => {
-        let parsedUser = new User(userReceived._json)
+        var parsedUser = new User(userReceived._json)
         parsedUser.profile.name = userReceived._json.name
         parsedUser.profile.birthdate = userReceived._json.birthday
         parsedUser.profile.gender = capitalize.words(userReceived._json.gender)
@@ -229,7 +158,7 @@ let facebook = function (userReceived) {
                     console.log(" -----------------------------//--------------------------- ");
                     if (!userDB) {
                         //Create
-                        let user = new User(parsedUser);
+                        var user = new User(parsedUser);
                         user.createdDate = Date.now()
                         user.token = generateUserToken(user);
                         console.log(" -----------------------------//--------------------------- ");
@@ -255,11 +184,63 @@ let facebook = function (userReceived) {
                                 console.log(" -----------------------------//--------------------------- ");
                                 console.log(" --------> USER AUTHENTICATED...");
                                 console.log(" -----------------------------//--------------------------- ");
+                                userAuth.password = undefined;
+                                userAuth.profile = undefined;
                                 resolve(userAuth);
                             }).catch(err => reject(err));
                     }
                 }).catch(err => reject(err));
         }
+    });
+};
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Update a new user
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var update = function (userReceived) {
+    return new Promise((resolve, reject) => {
+        User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
+            .then(_ => {
+                console.log(" -----------------------------//--------------------------- ");
+                console.log(" --------> USER UPDATED: " + userReceived.profile.name);
+                console.log(" -----------------------------//--------------------------- ");
+                resolve()
+            }).catch(err => reject(err));
+    });
+};
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Load an user
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var load = function (userEmail) {
+    return new Promise((resolve, reject) => {
+        User.findOne({ email: userEmail })
+        .then((userDB) => {
+            if (userDB) {
+                console.log(" -----------------------------//--------------------------- ");
+                console.log(" --------> USER LOADED: " + userDB.profile.name);
+                console.log(" -----------------------------//--------------------------- ");
+                resolve(userDB);
+            } else {
+                reject(userValidation.internalError());
+            }
+        }).catch(err => reject(err));
     });
 };
 
@@ -273,7 +254,7 @@ let facebook = function (userReceived) {
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-let authUserDevBeta = function (userReceived) {
+var authUserDevBeta = function (userReceived) {
     return new Promise((resolve, reject) => {
         User.findOne({ email: userReceived.email })
             .then((userDB) => {
@@ -312,9 +293,9 @@ let authUserDevBeta = function (userReceived) {
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-let generateUserToken = function (userReceived) {
+var generateUserToken = function (userReceived) {
     userReceived.token = null;
-    let token = jwt.sign(userReceived, jwtSettings.secretOrKey);
+    var token = jwt.sign(userReceived, jwtSettings.secretOrKey);
     return token;
 }
 
@@ -328,8 +309,8 @@ let generateUserToken = function (userReceived) {
  * 01/08/2017 - Michael Douglas - Initial creation.
  *
  */
-let decrypt = function (stringToDecrypt) {
-    let CRYPT_KEY = "confidantappsecretkey";
+var decrypt = function (stringToDecrypt) {
+    var CRYPT_KEY = "confidantappsecretkey";
 
     return new Promise((resolve, reject) => {
         var encryptedString = ""
@@ -347,8 +328,8 @@ let decrypt = function (stringToDecrypt) {
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     create: create,
-    update: update,
-    uploadPicture: uploadPicture,
     authenticate: authenticate,
-    facebook: facebook
+    facebook: facebook,
+    update: update,
+    load: load
 };

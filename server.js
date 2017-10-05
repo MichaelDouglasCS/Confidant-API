@@ -5,14 +5,18 @@ var passport = require("passport");
 var FacebookStrategy = require("passport-facebook").Strategy;
 var logger = require("morgan");
 var cookieParser = require("cookie-parser");
-var bodyParser = require("body-parser");
-var mongoose = require("mongoose");
 var compression = require("compression");
+
 var responseUtils = require("./api/utils/response.utils");
 var jwtSettings = require("./config/jwt-settings");
+var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
 var databaseConfig = require("./config/database");
 var configAuth = require("./config/auth");
+
 var user = require("./api/user/user.resources");
+var media = require("./api/media/media.resources");
+
 var app = express();
 
 //BaseURL
@@ -65,15 +69,12 @@ app.use(function (req, res, next) {
     let isUsersEndpoint = req.url.indexOf("/user") !== -1;
     if (isUsersEndpoint) {
         let isUser = req.url.indexOf("/user") !== -1;
-        let isUserPicture = req.url.indexOf("/user/picture") !== -1;
         let isAuthenticate = req.url.indexOf("/user/authenticate") !== -1;
         let isFacebook = req.url.indexOf("/user/facebook") !== -1;
         let isFacebookCallback = req.url.indexOf("/user/facebook/callback") !== -1;
 
         if (isAuthenticate || isFacebook || isFacebookCallback) {
             return next();
-        } else if (isUserPicture) {
-
         } else if (isUser) {
 
             if (req.method == "POST") {
@@ -102,6 +103,7 @@ app.use(function (req, res, next) {
 
 //Protected Routes
 app.use(baseURL + "/user", user);
+app.use(baseURL + "/media", media);
 
 //Catch 404 and forward to error handler
 app.use(function (req, res, next) {
