@@ -31,7 +31,7 @@ var userSchema = mongoose.Schema({
     profile: {
         name: String,
         nickname: String,
-        pictureURL: String,
+        picture: { fileURL: String },
         birthdate: String,
         gender: String,
         typeOfUser: String
