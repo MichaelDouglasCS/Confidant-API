@@ -41,7 +41,6 @@ var userSchema = mongoose.Schema({
 //Hide "_v", "password" and rename "_id" 
 userSchema.set("toJSON", {
     transform: function (doc, ret, options) {
-        ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
         delete ret.password;

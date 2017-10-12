@@ -16,6 +16,7 @@ var configAuth = require("./config/auth");
 
 var user = require("./api/user/user.resources");
 var media = require("./api/media/media.resources");
+var knowledge = require("./api/knowledge/knowledge.resources");
 
 var app = express();
 
@@ -56,9 +57,9 @@ passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCa
 // app.use(
 //     expressJWT({ secret: jwtSettings.secretOrKey }).unless({
 //         path: [baseURL + "/user",
-//         baseURL + "/user/authenticate",
-//         baseURL + "/user/facebook",
-//         baseURL + "/user/facebook/callback"]
+//         baseURL + "/users/authenticate",
+//         baseURL + "/users/facebook",
+//         baseURL + "/users/facebook/callback"]
 //     })
 // );
 
@@ -66,16 +67,16 @@ passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCa
 app.use(function (req, res, next) {
 
     //check if it's user endpoint
-    let isUsersEndpoint = req.url.indexOf("/user") !== -1;
+    let isUsersEndpoint = req.url.indexOf("/users") !== -1;
     if (isUsersEndpoint) {
-        let isUser = req.url.indexOf("/user") !== -1;
-        let isAuthenticate = req.url.indexOf("/user/authenticate") !== -1;
-        let isFacebook = req.url.indexOf("/user/facebook") !== -1;
-        let isFacebookCallback = req.url.indexOf("/user/facebook/callback") !== -1;
+        let isUsers = req.url.indexOf("/users") !== -1;
+        let isAuthenticate = req.url.indexOf("/users/authenticate") !== -1;
+        let isFacebook = req.url.indexOf("/users/facebook") !== -1;
+        let isFacebookCallback = req.url.indexOf("/users/facebook/callback") !== -1;
 
         if (isAuthenticate || isFacebook || isFacebookCallback) {
             return next();
-        } else if (isUser) {
+        } else if (isUsers) {
 
             if (req.method == "POST") {
                 return next();
@@ -102,8 +103,9 @@ app.use(function (req, res, next) {
 });
 
 //Protected Routes
-app.use(baseURL + "/user", user);
+app.use(baseURL + "/users", user);
 app.use(baseURL + "/media", media);
+app.use(baseURL + "/knowledges", knowledge);
 
 //Catch 404 and forward to error handler
 app.use(function (req, res, next) {

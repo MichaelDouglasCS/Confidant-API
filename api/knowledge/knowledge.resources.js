@@ -1,14 +1,12 @@
-// user.resource.js
+// knowledge.resource.js
 
 var express = require("express");
 var router = express.Router();
-var media = require("./media");
-var multer = require("multer");
-var upload = multer({ dest: __dirname + "/temp" });
+var knowledge = require("./knowledge");
 var responseUtils = require("../utils/response.utils");
 
 /**
- * A route method to upload User Profile Picture.
+ * A route method to add a new Knowledge.
  *
  * @author Michael Douglas
  * @since 26/07/2017
@@ -17,12 +15,11 @@ var responseUtils = require("../utils/response.utils");
  * 26/07/2017 - Michael Douglas - Initial creation.
  *
  */
-router.post("/", upload.single("file"), (req, res) => {
-
-    //Upload File
-    media.upload(req.file)
-        .then((media) => {
-            let responseObj = media;
+router.post("/", (req, res) => {
+    let userReceived = req.body;
+    knowledge.authenticate(userReceived)
+        .then((userAuth) => {
+            let responseObj = userAuth;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
