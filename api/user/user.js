@@ -22,7 +22,7 @@ var Schema = mongoose.Schema;
 var typeOfUserEnum = require("./userType.enum");
 
 // ------ MODEL --------- //
-var userSchema = mongoose.Schema({
+var userSchema = Schema({
     id: String,
     email: String,
     password: String,
@@ -34,7 +34,11 @@ var userSchema = mongoose.Schema({
         picture: { fileURL: String },
         birthdate: String,
         gender: String,
-        typeOfUser: String
+        typeOfUser: String,
+        knowledges: {
+            id: String,
+            topic: String
+        }
     }
 });
 
@@ -227,7 +231,7 @@ var update = function (userReceived) {
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-var load = function (userEmail) {
+var listBy = function (userEmail) {
     return new Promise((resolve, reject) => {
         User.findOne({ email: userEmail })
         .then((userDB) => {
@@ -277,7 +281,7 @@ var authUserDevBeta = function (userReceived) {
                     }
                 }
             }).catch(err => {
-                reject(serValidation.userNotFound());
+                reject(userValidation.userNotFound());
             });
     });
 }
@@ -330,5 +334,5 @@ module.exports = {
     authenticate: authenticate,
     facebook: facebook,
     update: update,
-    load: load
+    listBy: listBy
 };

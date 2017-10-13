@@ -105,7 +105,7 @@ router.put("/", (req, res) => {
 });
 
 /**
- * A route method to Load the user by email.
+ * A route method to List the user by email.
  *
  * @author Michael Douglas
  * @since 26/07/2017
@@ -116,7 +116,7 @@ router.put("/", (req, res) => {
  */
 router.get("/:email", (req, res) => {
     let userEmail = req.params.email;
-    user.load(userEmail)
+    user.listBy(userEmail)
         .then((userLoaded) => {
             let responseObj = userLoaded;
             res.status(200).json(responseObj);
