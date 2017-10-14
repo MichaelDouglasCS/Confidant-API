@@ -1,8 +1,6 @@
 // user.resource.js
 
 var express = require("express");
-var queryString = require("query-string");
-var passport = require("passport");
 var router = express.Router();
 var media = require("./media");
 var multer = require("multer");
