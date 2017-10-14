@@ -16,7 +16,7 @@ var fs = require("fs");
 var Schema = mongoose.Schema;
 
 // ------ MODEL --------- //
-var mediaSchema = mongoose.Schema({
+var mediaSchema = Schema({
     fileURL: String
 });
 
@@ -26,7 +26,6 @@ mediaSchema.set("toJSON", {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
-        delete ret.password;
     }
 });
 
