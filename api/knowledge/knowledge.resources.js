@@ -16,10 +16,11 @@ var responseUtils = require("../utils/response.utils");
  *
  */
 router.post("/", (req, res) => {
-    let knowledgeReceived = req.body;
-    knowledge.insert(knowledgeReceived)
-        .then((knowledge) => {
-            let responseObj = knowledge;
+    let knowledgesReceived = req.body.knowledges;
+    knowledge.insert(knowledgesReceived)
+        .then((knowledges) => {
+            let responseObj = responseUtils.buildBaseResponse();
+            responseObj.knowledges = knowledges;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
@@ -39,8 +40,9 @@ router.post("/", (req, res) => {
  */
 router.get("/", (req, res) => {
     knowledge.listAll()
-        .then((list) => {
-            let responseObj = list;
+        .then((knowledges) => {
+            let responseObj = responseUtils.buildBaseResponse();
+            responseObj.knowledges = knowledges;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;

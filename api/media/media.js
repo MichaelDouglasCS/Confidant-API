@@ -80,5 +80,6 @@ let upload = function (file) {
 
 // ----- MODULE EXPORTS -------- //
 module.exports = {
+    schema: mediaSchema,
     upload: upload
 };
