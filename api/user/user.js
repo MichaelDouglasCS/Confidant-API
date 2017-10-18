@@ -15,6 +15,8 @@ var capitalize = require("capitalize");
 var jwtSettings = require("../../config/jwt-settings");
 var validator = require("validator");
 var userValidation = require("./user.validation");
+var knowledge = require("../knowledge/knowledge");
+var media = require("../media/media");
 var jwt = require("jsonwebtoken");
 var CryptoJS = require("crypto-js");
 var Schema = mongoose.Schema;
@@ -31,14 +33,11 @@ var userSchema = Schema({
     profile: {
         name: String,
         nickname: String,
-        picture: { fileURL: String },
+        picture: media.schema,
         birthdate: String,
         gender: String,
         typeOfUser: String,
-        knowledges: {
-            id: String,
-            topic: String
-        }
+        knowledges: [knowledge.schema]
     }
 });
 
@@ -234,16 +233,16 @@ var update = function (userReceived) {
 var listBy = function (userEmail) {
     return new Promise((resolve, reject) => {
         User.findOne({ email: userEmail })
-        .then((userDB) => {
-            if (userDB) {
-                console.log(" -----------------------------//--------------------------- ");
-                console.log(" --------> USER LOADED: " + userDB.profile.name);
-                console.log(" -----------------------------//--------------------------- ");
-                resolve(userDB);
-            } else {
-                reject(userValidation.internalError());
-            }
-        }).catch(err => reject(err));
+            .then((userDB) => {
+                if (userDB) {
+                    console.log(" -----------------------------//--------------------------- ");
+                    console.log(" --------> USER LOADED: " + userDB.profile.name);
+                    console.log(" -----------------------------//--------------------------- ");
+                    resolve(userDB);
+                } else {
+                    reject(userValidation.internalError());
+                }
+            }).catch(err => reject(err));
     });
 };
 

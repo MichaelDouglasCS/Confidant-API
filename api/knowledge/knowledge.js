@@ -12,6 +12,7 @@
  */
 var mongoose = require("mongoose");
 var capitalize = require("capitalize");
+var async = require("async");
 var fs = require("fs");
 var Schema = mongoose.Schema;
 
@@ -41,30 +42,44 @@ var Knowledge = mongoose.model("Knowledge", knowledgeSchema);
  * 27/07/2017 - Michael Douglas - Initial creation.
  *
  */
-var insert = function (knowledgeReceived) {
+var insert = function (knowledgesReceived) {
     return new Promise((resolve, reject) => {
-        let knowledge = new Knowledge(knowledgeReceived);
-        knowledge.topic = knowledge.topic.toLowerCase();
+        let knowledges = []
 
-        Knowledge.findOne({ topic: knowledge.topic })
-            .then((knowledgeDB) => {
-                if (!knowledgeDB) {
-                    knowledge.id = mongoose.Types.ObjectId();
-                    knowledge.save()
-                        .then((knowledgeCreated) => {
-                            knowledgeCreated.topic = capitalize.words(knowledgeCreated.topic)
-                            console.log(" -----------------------------//--------------------------- ");
-                            console.log(" --------> KNOWLEDGE CREATED...: " + knowledgeCreated.topic);
-                            console.log(" -----------------------------//--------------------------- ");
-                            resolve(knowledgeCreated);
-                        }).catch(err => reject(err));
-                } else {
-                    knowledgeDB.topic = capitalize.words(knowledgeDB.topic)
-                    resolve(knowledgeDB)
-                }
-            }).catch(err => {
+        knowledgesReceived.forEach(knowledgeReceived => {
+            let knowledge = new Knowledge(knowledgeReceived);
+
+            knowledge.id = mongoose.Types.ObjectId();
+            knowledge.topic = knowledge.topic.toLowerCase();
+
+            knowledges.push(knowledge);
+        });
+
+        async.eachSeries(knowledges, function (knowledge, done) {
+            Knowledge.findOne({ topic: knowledge.topic })
+                .then((knowledgeDB) => {
+                    if (!knowledgeDB) {
+                        knowledge.save()
+                            .then((knowledgeCreated) => {
+                                console.log(" -----------------------------//--------------------------- ");
+                                console.log(" --------> KNOWLEDGE CREATED...: " + knowledgeCreated.topic);
+                                console.log(" -----------------------------//--------------------------- ");
+                                done();
+                            }).catch(err => done(err));
+                    } else {
+                        done();
+                    }
+                }).catch(err => done(err));
+        }, function (err) {
+            if (!err) {
+                listAll()
+                    .then((knowledges) => {
+                        resolve(knowledges)
+                    }).catch(err => reject(err));
+            } else {
                 reject(err);
-            });
+            }
+        });
     });
 };
 
@@ -81,14 +96,12 @@ var insert = function (knowledgeReceived) {
 var listAll = function () {
     return new Promise((resolve, reject) => {
         Knowledge.find()
-            .then((list) => {
-                list.forEach(knowledge => {
+            .then((knowledges) => {
+                knowledges.forEach(knowledge => {
                     knowledge.topic = capitalize.words(knowledge.topic)
                 });
-                resolve(list);
-            }).catch(err => {
-                reject(err);
-            });
+                resolve(knowledges);
+            }).catch(err => reject(err));
     });
 };
 
@@ -117,6 +130,7 @@ var deleteBy = function (id) {
 
 // ----- MODULE EXPORTS -------- //
 module.exports = {
+    schema: knowledgeSchema,
     insert: insert,
     listAll: listAll,
     deleteBy: deleteBy
