@@ -55,7 +55,7 @@ var changeAvailability = function (confidantID) {
                 if (confidant) {
 
                     if (!confidant.profile.isAvailable) {
-                        setOnline(confidant)
+                        insertAvailability(confidant)
                             .then(_ => {
                                 confidant.profile.isAvailable = true;
                                 confidant.save()
@@ -67,7 +67,7 @@ var changeAvailability = function (confidantID) {
                                     }).catch(err => reject(err));
                             }).catch(err => reject(err));
                     } else {
-                        setOffline(confidant)
+                        removeAvailability(confidant)
                             .then(_ => {
                                 confidant.profile.isAvailable = false;
                                 confidant.save()
@@ -97,7 +97,7 @@ var changeAvailability = function (confidantID) {
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-var setOnline = function (confidant) {
+var insertAvailability = function (confidant) {
     return new Promise((resolve, reject) => {
         let knowledges = confidant.profile.knowledges;
 
@@ -114,7 +114,7 @@ var setOnline = function (confidant) {
                         availability.save()
                             .then((_) => {
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> GROUP CREATED...");
+                                console.log(" --------> AVAILABILITY CREATED...");
                                 console.log(" -----------------------------//--------------------------- ");
                                 done();
                             }).catch(err => done(err));
@@ -128,7 +128,7 @@ var setOnline = function (confidant) {
                         ConfidantAvailability.findOneAndUpdate({ id: knowledge.id }, confidantAvailability, { upsert: true })
                             .then(_ => {
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> GROUP UPDATED");
+                                console.log(" --------> AVAILABILITY UPDATED");
                                 console.log(" -----------------------------//--------------------------- ");
                                 done();
                             }).catch(err => done(err));
@@ -155,7 +155,7 @@ var setOnline = function (confidant) {
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-var setOffline = function (confidant) {
+var removeAvailability = function (confidant) {
     return new Promise((resolve, reject) => {
         let knowledges = confidant.profile.knowledges;
 
@@ -175,7 +175,7 @@ var setOffline = function (confidant) {
                         ConfidantAvailability.findOneAndUpdate({ id: knowledge.id }, confidantAvailability, { upsert: true })
                             .then(_ => {
                                 console.log(" -----------------------------//--------------------------- ");
-                                console.log(" --------> GROUP UPDATED");
+                                console.log(" --------> AVAILABILITY UPDATED");
                                 console.log(" -----------------------------//--------------------------- ");
                                 done();
                             }).catch(err => done(err));
