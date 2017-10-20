@@ -5,8 +5,31 @@ var queryString = require("query-string");
 var passport = require("passport");
 var router = express.Router();
 var user = require("./user");
+var confidant = require("./confidant");
 let userValidation = require("./user.validation");
 var responseUtils = require("../utils/response.utils");
+
+/**
+ * A route method to create the user.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.post("/", (req, res) => {
+    let userReceived = req.body;
+    user.create(userReceived)
+        .then((userAuth) => {
+            let responseObj = userAuth;
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
 
 /**
  * A route method to authenticate the user.
@@ -61,28 +84,6 @@ router.get("/facebook/callback", (req, res) => {
 });
 
 /**
- * A route method to create the user.
- *
- * @author Michael Douglas
- * @since 26/07/2017
- *
- * History:
- * 26/07/2017 - Michael Douglas - Initial creation.
- *
- */
-router.post("/", (req, res) => {
-    let userReceived = req.body;
-    user.create(userReceived)
-        .then((userAuth) => {
-            let responseObj = userAuth;
-            res.status(200).json(responseObj);
-        }).catch((error) => {
-            let httpCode = error.status || 500;
-            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
-        });
-});
-
-/**
  * A route method to Update the user.
  *
  * @author Michael Douglas
@@ -119,6 +120,28 @@ router.get("/:email", (req, res) => {
     user.listBy(userEmail)
         .then((userLoaded) => {
             let responseObj = userLoaded;
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
+
+/**
+ * A route method to Change Status of an Confidant by ID.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.put("/changeAvailability/:id", (req, res) => {
+    let id = req.params.id;
+    confidant.changeAvailability(id)
+        .then((confidantUpdated) => {
+            let responseObj = confidantUpdated;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
