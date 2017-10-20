@@ -61,9 +61,9 @@ var changeAvailability = function (confidantID) {
                                 confidant.save()
                                     .then((confidantSaved) => {
                                         console.log(" -----------------------------//--------------------------- ");
-                                        console.log(" --------> SET ONLINE: " + confidant.profile.name);
+                                        console.log(" --------> SET ONLINE: " + confidantSaved.profile.name);
                                         console.log(" -----------------------------//--------------------------- ");
-                                        resolve(confidantSaved);
+                                        resolve(confidantSaved.profile.isAvailable);
                                     }).catch(err => reject(err));
                             }).catch(err => reject(err));
                     } else {
@@ -73,9 +73,9 @@ var changeAvailability = function (confidantID) {
                                 confidant.save()
                                     .then((confidantSaved) => {
                                         console.log(" -----------------------------//--------------------------- ");
-                                        console.log(" --------> SET OFFLINE: " + confidant.profile.name);
+                                        console.log(" --------> SET OFFLINE: " + confidantSaved.profile.name);
                                         console.log(" -----------------------------//--------------------------- ");
-                                        resolve(confidantSaved);
+                                        resolve(confidantSaved.profile.isAvailable);
                                     }).catch(err => reject(err));
                             }).catch(err => reject(err));
                     }
@@ -119,8 +119,12 @@ var setOnline = function (confidant) {
                                 done();
                             }).catch(err => done(err));
                     } else {
+                        var index = confidantAvailability.availablesIDs.indexOf(confidant.id);
 
-                        confidantAvailability.availablesIDs.push(confidant.id);
+                        if (index == -1) {
+                            confidantAvailability.availablesIDs.push(confidant.id);
+                        }
+                        
                         ConfidantAvailability.findOneAndUpdate({ id: knowledge.id }, confidantAvailability, { upsert: true })
                             .then(_ => {
                                 console.log(" -----------------------------//--------------------------- ");

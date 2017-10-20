@@ -140,8 +140,8 @@ router.get("/:email", (req, res) => {
 router.put("/changeAvailability/:id", (req, res) => {
     let id = req.params.id;
     confidant.changeAvailability(id)
-        .then((confidantUpdated) => {
-            let responseObj = confidantUpdated;
+        .then((isAvailable) => {
+            let responseObj = isAvailable;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;
