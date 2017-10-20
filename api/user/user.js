@@ -37,7 +37,8 @@ var userSchema = Schema({
         birthdate: String,
         gender: String,
         typeOfUser: String,
-        knowledges: [knowledge.schema]
+        knowledges: [knowledge.schema],
+        isAvailable: Boolean
     }
 });
 
@@ -214,7 +215,7 @@ var update = function (userReceived) {
                 console.log(" -----------------------------//--------------------------- ");
                 console.log(" --------> USER UPDATED: " + userReceived.profile.name);
                 console.log(" -----------------------------//--------------------------- ");
-                resolve()
+                resolve();
             }).catch(err => reject(err));
     });
 };
@@ -329,6 +330,7 @@ var decrypt = function (stringToDecrypt) {
 
 // ----- MODULE EXPORTS -------- //
 module.exports = {
+    model: User,
     create: create,
     authenticate: authenticate,
     facebook: facebook,
