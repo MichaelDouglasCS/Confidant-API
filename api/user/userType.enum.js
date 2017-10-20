@@ -18,5 +18,5 @@ let TypeOfUser = new Enum({
 });
 
 module.exports = {
-    TypeOfUser: TypeOfUser
+    enum: TypeOfUser
 };

@@ -5,7 +5,6 @@ var queryString = require("query-string");
 var passport = require("passport");
 var router = express.Router();
 var user = require("./user");
-var confidant = require("./confidant");
 let userValidation = require("./user.validation");
 var responseUtils = require("../utils/response.utils");
 
@@ -139,9 +138,9 @@ router.get("/:email", (req, res) => {
  */
 router.put("/changeAvailability/:id", (req, res) => {
     let id = req.params.id;
-    confidant.changeAvailability(id)
-        .then((confidantUpdated) => {
-            let responseObj = confidantUpdated;
+    user.changeAvailabilityById(id)
+        .then((isAvailable) => {
+            let responseObj = isAvailable;
             res.status(200).json(responseObj);
         }).catch((error) => {
             let httpCode = error.status || 500;

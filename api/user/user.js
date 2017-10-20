@@ -15,13 +15,14 @@ var capitalize = require("capitalize");
 var jwtSettings = require("../../config/jwt-settings");
 var validator = require("validator");
 var userValidation = require("./user.validation");
+var async = require("async");
 var knowledge = require("../knowledge/knowledge");
 var media = require("../media/media");
 var jwt = require("jsonwebtoken");
 var CryptoJS = require("crypto-js");
 var Schema = mongoose.Schema;
 
-var typeOfUserEnum = require("./userType.enum");
+var userType = require("./userType.enum");
 
 // ------ MODEL --------- //
 var userSchema = Schema({
@@ -42,6 +43,13 @@ var userSchema = Schema({
     }
 });
 
+// ------ MODEL --------- //
+var confidantAvailabilitySchema = Schema({
+    id: String,
+    knowledge: String,
+    availablesIDs: [String]
+});
+
 //Hide "_v", "password" and rename "_id" 
 userSchema.set("toJSON", {
     transform: function (doc, ret, options) {
@@ -51,7 +59,16 @@ userSchema.set("toJSON", {
     }
 });
 
+//Hide "_v", "password" and rename "_id" 
+confidantAvailabilitySchema.set("toJSON", {
+    transform: function (doc, ret, options) {
+        delete ret._id;
+        delete ret.__v;
+    }
+});
+
 var User = mongoose.model("User", userSchema);
+var ConfidantAvailability = mongoose.model("ConfidantAvailability", confidantAvailabilitySchema);
 
 // ----- PUBLIC METHODS ------- //
 /**
@@ -210,13 +227,33 @@ var facebook = function (userReceived) {
  */
 var update = function (userReceived) {
     return new Promise((resolve, reject) => {
-        User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
-            .then(_ => {
-                console.log(" -----------------------------//--------------------------- ");
-                console.log(" --------> USER UPDATED: " + userReceived.profile.name);
-                console.log(" -----------------------------//--------------------------- ");
-                resolve();
-            }).catch(err => reject(err));
+        if (userReceived.profile.typeOfUser == userType.enum.CONFIDANT) {
+            async.times(1, function (_, done) {
+                refreshAvailability(userReceived)
+                    .then(_ => done())
+                    .catch(err => done(err));
+            }, function (err) {
+                if (!err) {
+                    User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
+                        .then(_ => {
+                            console.log(" -----------------------------//--------------------------- ");
+                            console.log(" --------> USER UPDATED: " + userReceived.profile.name);
+                            console.log(" -----------------------------//--------------------------- ");
+                            resolve();
+                        }).catch(err => reject(err));
+                } else {
+                    reject(err);
+                }
+            });
+        } else {
+            User.findOneAndUpdate({ email: userReceived.email }, userReceived, { upsert: true })
+                .then(_ => {
+                    console.log(" -----------------------------//--------------------------- ");
+                    console.log(" --------> USER UPDATED: " + userReceived.profile.name);
+                    console.log(" -----------------------------//--------------------------- ");
+                    resolve();
+                }).catch(err => reject(err));
+        }
     });
 };
 
@@ -317,7 +354,6 @@ var decrypt = function (stringToDecrypt) {
 
     return new Promise((resolve, reject) => {
         var encryptedString = ""
-
         if (stringToDecrypt && stringToDecrypt != "") {
             encryptedString = stringToDecrypt
             var bytes = CryptoJS.AES.decrypt(encryptedString.toString(), CRYPT_KEY);
@@ -328,6 +364,223 @@ var decrypt = function (stringToDecrypt) {
     });
 }
 
+//----------------------------------------------------CONFIDANT------------------------------------------------------------------//
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Change Availability of User
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var changeAvailabilityById = function (confidantID) {
+    return new Promise((resolve, reject) => {
+        User.findOne({ id: confidantID })
+            .then((confidant) => {
+                if (confidant) {
+                    if (!confidant.profile.isAvailable) {
+                        insertAvailability(confidant)
+                            .then(_ => {
+                                confidant.profile.isAvailable = true;
+                                confidant.save()
+                                    .then((confidantSaved) => {
+                                        console.log(" -----------------------------//--------------------------- ");
+                                        console.log(" --------> SET ONLINE: " + confidantSaved.profile.name);
+                                        console.log(" -----------------------------//--------------------------- ");
+                                        resolve(confidantSaved.profile.isAvailable);
+                                    }).catch(err => reject(err));
+                            }).catch(err => reject(err));
+                    } else {
+                        removeAvailability(confidant)
+                            .then(_ => {
+                                confidant.profile.isAvailable = false;
+                                confidant.save()
+                                    .then((confidantSaved) => {
+                                        console.log(" -----------------------------//--------------------------- ");
+                                        console.log(" --------> SET OFFLINE: " + confidantSaved.profile.name);
+                                        console.log(" -----------------------------//--------------------------- ");
+                                        resolve(confidantSaved.profile.isAvailable);
+                                    }).catch(err => reject(err));
+                            }).catch(err => reject(err));
+                    }
+                } else {
+                    reject(userValidation.internalError());
+                }
+            }).catch(err => reject(err));
+    });
+};
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Update Availability Collection
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var refreshAvailability = function (confidantReceived) {
+    return new Promise((resolve, reject) => {
+        User.findOne({ id: confidantReceived.id })
+            .then((confidant) => {
+                if (confidant) {
+
+                    if (confidantReceived.profile.knowledges.lenght < confidant.profile.knowledges.lenght) {
+                        confidant.profile.knowledges.forEach(knowledge => {
+                            var index = confidantReceived.profile.knowledges.indexOf(confidant.id);
+                            if (index != -1) {
+                                confidant.profile.knowledges.splice(index, 1);
+                            }
+                        });
+                    } else {
+                        confidantReceived.profile.knowledges.forEach(knowledge => {
+                            var index = confidant.profile.knowledges.indexOf(confidantReceived.id);
+                            if (index != -1) {
+                                confidant.profile.knowledges.splice(index, 1);
+                            }
+                        });
+                    }
+
+                    async.times(1, function (_, done) {
+                        removeAvailability(confidant)
+                            .then(_ => done())
+                            .catch(err => done(err));
+                    }, function (err) {
+                        if (!err) {
+                            if (confidantReceived.profile.isAvailable) {
+                                insertAvailability(confidantReceived)
+                                    .then(_ => resolve())
+                                    .catch(err => reject(err));
+                            } else {
+                                removeAvailability(confidantReceived)
+                                    .then(_ => resolve())
+                                    .catch(err => reject(err));
+                            }
+                        } else {
+                            reject(err);
+                        }
+                    });
+                } else {
+                    reject(userValidation.internalError());
+                }
+            }).catch(err => reject(err));
+    });
+};
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Insert Confidant in the DB and Set Online
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var insertAvailability = function (confidant) {
+    return new Promise((resolve, reject) => {
+        let knowledges = confidant.profile.knowledges;
+
+        async.eachSeries(knowledges, function (knowledge, done) {
+            ConfidantAvailability.findOne({ id: knowledge.id })
+                .then((confidantAvailability) => {
+
+                    if (!confidantAvailability) {
+                        let availability = ConfidantAvailability();
+                        availability.id = knowledge.id;
+                        availability.knowledge = knowledge.topic;
+                        availability.availablesIDs.push(confidant.id);
+                        availability.save()
+                            .then((_) => {
+                                console.log(" -----------------------------//--------------------------- ");
+                                console.log(" --------> AVAILABILITY CREATED...");
+                                console.log(" -----------------------------//--------------------------- ");
+                                done();
+                            }).catch(err => done(err));
+                    } else {
+                        var index = confidantAvailability.availablesIDs.indexOf(confidant.id);
+
+                        if (index == -1) {
+                            confidantAvailability.availablesIDs.push(confidant.id);
+
+                            ConfidantAvailability.findOneAndUpdate({ id: knowledge.id }, confidantAvailability, { upsert: true })
+                                .then(_ => {
+                                    console.log(" -----------------------------//--------------------------- ");
+                                    console.log(" --------> AVAILABILITY UPDATED");
+                                    console.log(" -----------------------------//--------------------------- ");
+                                    done();
+                                }).catch(err => done(err));
+                        } else {
+                            done();
+                        }
+                    }
+                }).catch(err => done(err));
+        }, function (err) {
+            if (!err) {
+                resolve();
+            } else {
+                reject(err);
+            }
+        });
+    });
+};
+
+// ----- PUBLIC METHODS ------- //
+/**
+ * Remove Confidant from the DB and Set Offline
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var removeAvailability = function (confidant) {
+    return new Promise((resolve, reject) => {
+        let knowledges = confidant.profile.knowledges;
+
+        async.eachSeries(knowledges, function (knowledge, done) {
+            ConfidantAvailability.findOne({ id: knowledge.id })
+                .then((confidantAvailability) => {
+
+                    if (!confidantAvailability) {
+                        done();
+                    } else {
+                        var index = confidantAvailability.availablesIDs.indexOf(confidant.id);
+
+                        if (index != -1) {
+                            confidantAvailability.availablesIDs.splice(index, 1);
+
+                            ConfidantAvailability.findOneAndUpdate({ id: knowledge.id }, confidantAvailability, { upsert: true })
+                                .then(_ => {
+                                    console.log(" -----------------------------//--------------------------- ");
+                                    console.log(" --------> AVAILABILITY UPDATED");
+                                    console.log(" -----------------------------//--------------------------- ");
+                                    done();
+                                }).catch(err => done(err));
+                        } else {
+                            done();
+                        }
+                    }
+                }).catch(err => done(err));
+        }, function (err) {
+            if (!err) {
+                resolve();
+            } else {
+                reject(err);
+            }
+        });
+    });
+};
+
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     model: User,
@@ -335,5 +588,6 @@ module.exports = {
     authenticate: authenticate,
     facebook: facebook,
     update: update,
-    listBy: listBy
+    listBy: listBy,
+    changeAvailabilityById: changeAvailabilityById
 };
