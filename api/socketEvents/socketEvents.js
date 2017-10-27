@@ -65,6 +65,27 @@ exports = module.exports = function (serverIO) {
             }
         });
 
+        client.on("updateSocketUser", (userID) => {
+            let isUpdate = false
+            let newSocket = new Socket();
+            newSocket.userID = userID;
+            newSocket.socketID = client.id;
+
+            connectedSockets.forEach((socket) => {
+                if (socket.userID == newSocket.userID) {
+                    socket.socketID = newSocket.socketID;
+                    isUpdate = true;
+                } else if (socket.socketID == newSocket.socketID) {
+                    socket.userID = newSocket.userID;
+                    isUpdate = true;
+                }
+            });
+
+            if (!isUpdate) {
+                connectedSockets.push(newSocket);
+            }
+        });
+
         client.on("updateSocketTeste", (userID) => {
             let isUpdate = false
             let newSocket = new Socket();
