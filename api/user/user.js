@@ -268,9 +268,25 @@ var update = function (userReceived) {
  * 31/07/2017 - Michael Douglas - Initial creation.
  *
  */
-var listBy = function (userEmail) {
+var listByEmail = function (userEmail) {
     return new Promise((resolve, reject) => {
         User.findOne({ email: userEmail })
+            .then((userDB) => {
+                if (userDB) {
+                    console.log(" -----------------------------//--------------------------- ");
+                    console.log(" --------> USER LOADED: " + userDB.profile.name);
+                    console.log(" -----------------------------//--------------------------- ");
+                    resolve(userDB);
+                } else {
+                    reject(userValidation.internalError());
+                }
+            }).catch(err => reject(err));
+    });
+};
+
+var listById = function (id) {
+    return new Promise((resolve, reject) => {
+        User.findOne({ id: id })
             .then((userDB) => {
                 if (userDB) {
                     console.log(" -----------------------------//--------------------------- ");
@@ -581,6 +597,34 @@ var removeAvailability = function (confidant) {
     });
 };
 
+// ----- PUBLIC METHODS ------- //
+/**
+ * Find Confidant by ID
+ *
+ * @author Michael Douglas
+ * @since 31/07/2017
+ *
+ * History:
+ * 31/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+var matchConfidantByKnowledgeId = function (knowledgeID) {
+    return new Promise((resolve, reject) => {
+
+        ConfidantAvailability.findOne({ id: knowledgeID })
+            .then((confidantAvailability) => {
+
+                if (confidantAvailability) {
+                    let availableIDs = confidantAvailability.availablesIDs
+                    let confidantID = availableIDs[Math.floor(Math.random() * availableIDs.length)]
+                    resolve(confidantID);                    
+                } else {
+                    reject();
+                }
+            }).catch(err => reject(err));
+    });
+};
+
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     model: User,
@@ -588,6 +632,8 @@ module.exports = {
     authenticate: authenticate,
     facebook: facebook,
     update: update,
-    listBy: listBy,
-    changeAvailabilityById: changeAvailabilityById
+    listByEmail: listByEmail,
+    listById: listById,
+    changeAvailabilityById: changeAvailabilityById,
+    matchConfidantByKnowledgeId: matchConfidantByKnowledgeId
 };
