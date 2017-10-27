@@ -60,16 +60,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCallback));
 
-//Middleware
-// app.use(
-//     expressJWT({ secret: jwtSettings.secretOrKey }).unless({
-//         path: [baseURL + "/user",
-//         baseURL + "/users/authenticate",
-//         baseURL + "/users/facebook",
-//         baseURL + "/users/facebook/callback"]
-//     })
-// );
-
 //Middleware for User
 app.use(function (req, res, next) {
 

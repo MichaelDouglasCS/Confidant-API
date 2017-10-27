@@ -44,7 +44,7 @@ exports = module.exports = function (serverIO) {
             connectedSockets.push(newSocket);
         }
 
-        client.emit("updateSocket", client.id, (userID) => {
+        client.emit("updateSocket", (userID) => {
             let isUpdate = false
             let newSocket = new Socket();
             newSocket.userID = userID;
@@ -104,6 +104,7 @@ exports = module.exports = function (serverIO) {
                                 if (serverIO.sockets.connected[socketID]) {
                                     serverIO.sockets.connected[socketID].emit("match", profile, (response) => {
                                         console.log(response);
+                                        // callback(response);
                                     });
                                 } else {
                                     console.log("Error, No Confidant Available");
