@@ -116,7 +116,7 @@ router.put("/", (req, res) => {
  */
 router.get("/:email", (req, res) => {
     let userEmail = req.params.email;
-    user.listBy(userEmail)
+    user.listByEmail(userEmail)
         .then((userLoaded) => {
             let responseObj = userLoaded;
             res.status(200).json(responseObj);
@@ -138,6 +138,28 @@ router.get("/:email", (req, res) => {
  */
 router.put("/changeAvailability/:id", (req, res) => {
     let id = req.params.id;
+    user.changeAvailabilityById(id)
+        .then((isAvailable) => {
+            let responseObj = isAvailable;
+            res.status(200).json(responseObj);
+        }).catch((error) => {
+            let httpCode = error.status || 500;
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+        });
+});
+
+/**
+ * A Socket method to Match a Confidant by KnowledgeID.
+ *
+ * @author Michael Douglas
+ * @since 26/07/2017
+ *
+ * History:
+ * 26/07/2017 - Michael Douglas - Initial creation.
+ *
+ */
+router.get("/matchConfidant/:knowledgeID", (req, res) => {
+    let id = req.params.knowledgeID;
     user.changeAvailabilityById(id)
         .then((isAvailable) => {
             let responseObj = isAvailable;

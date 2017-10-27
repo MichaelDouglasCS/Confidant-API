@@ -1,4 +1,5 @@
 var express = require("express");
+var http = require("http");
 var expressJWT = require("express-jwt");
 var jwt = require("jsonwebtoken");
 var passport = require("passport");
@@ -19,6 +20,12 @@ var media = require("./api/media/media.resources");
 var knowledge = require("./api/knowledge/knowledge.resources");
 
 var app = express();
+var server = http.Server(app);
+var io = require("socket.io").listen(server);
+var socketEvents = require("./api/socketEvents/socketEvents");
+socketEvents(io);
+
+server.listen(3001);
 
 //BaseURL
 var baseURL = "/confidant/api/v1";
@@ -52,16 +59,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //Config Passport
 app.use(passport.initialize());
 passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCallback));
-
-//Middleware
-// app.use(
-//     expressJWT({ secret: jwtSettings.secretOrKey }).unless({
-//         path: [baseURL + "/user",
-//         baseURL + "/users/authenticate",
-//         baseURL + "/users/facebook",
-//         baseURL + "/users/facebook/callback"]
-//     })
-// );
 
 //Middleware for User
 app.use(function (req, res, next) {
