@@ -20,12 +20,6 @@ var media = require("./api/media/media.resources");
 var knowledge = require("./api/knowledge/knowledge.resources");
 
 var app = express();
-var server = http.Server(app);
-var io = require("socket.io").listen(server);
-var socketEvents = require("./api/socketEvents/socketEvents");
-socketEvents(io);
-
-server.listen(3001);
 
 //BaseURL
 var baseURL = "/confidant/api/v1";
