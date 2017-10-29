@@ -18,6 +18,7 @@ var userValidation = require("./user.validation");
 var async = require("async");
 var knowledge = require("../knowledge/knowledge");
 var media = require("../media/media");
+var chat = require("../chat/chat");
 var jwt = require("jsonwebtoken");
 var CryptoJS = require("crypto-js");
 var Schema = mongoose.Schema;
@@ -39,7 +40,8 @@ var userSchema = Schema({
         gender: String,
         typeOfUser: String,
         knowledges: [knowledge.schema],
-        isAvailable: Boolean
+        isAvailable: Boolean,
+        chats: [chat.schema]
     }
 });
 
