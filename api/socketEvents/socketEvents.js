@@ -1,6 +1,6 @@
 var user = require("../user/user");
+var chat = require("../chat/chat");
 var mongoose = require("mongoose");
-var fs = require("fs");
 var Schema = mongoose.Schema;
 
 // ------ MODEL --------- //
@@ -85,62 +85,35 @@ exports = module.exports = function (serverIO) {
                 connectedSockets.push(newSocket);
             }
         });
-
-        client.on("updateSocketTeste", (userID) => {
-            let isUpdate = false
-            let newSocket = new Socket();
-            newSocket.userID = userID;
-            newSocket.socketID = client.id;
-
-            connectedSockets.forEach((socket) => {
-                if (socket.userID == newSocket.userID) {
-                    socket.socketID = newSocket.socketID;
-                    isUpdate = true;
-                } else if (socket.socketID == newSocket.socketID) {
-                    socket.userID = newSocket.userID;
-                    isUpdate = true;
-                }
-            });
-
-            if (!isUpdate) {
-                connectedSockets.push(newSocket);
-            }
-        });
         console.log("User Connected");
 
         //Start Conversation With an Confidant
-        client.on("startConversation", (chatInfo, callback) => {
-            let userID = chatInfo.userID;
-            let knowledgeID = chatInfo.knowledgeID;
+        client.on("startConversation", (chatReceived, callback) => {
+            let chatInfo = new chat.Chat(chatReceived);
+            chatInfo.id = mongoose.Types.ObjectId();
 
-            user.listById(userID)
-                .then((userDB) => {
-                    let profile = userDB.profile;
+            user.matchConfidantByKnowledgeId(chatInfo.knowledge.id)
+                .then((confidantID) => {
+                    if (confidantID) {
+                        let socketID = clientRecipient(confidantID);
+                        
+                        if (serverIO.sockets.connected[socketID]) {
+                            serverIO.sockets.connected[socketID].emit("match", chatInfo, (response) => {
+                                let chat = response[0]
 
-                    user.matchConfidantByKnowledgeId(knowledgeID)
-                        .then((confidantID) => {
-                            if (confidantID) {
-                                let socketID = clientRecipient(confidantID);
-
-                                if (serverIO.sockets.connected[socketID]) {
-                                    serverIO.sockets.connected[socketID].emit("match", profile, (response) => {
-                                        console.log(response);
-                                        // callback(response);
-                                    });
+                                if (chat) {
+                                    callback(chat);
                                 } else {
-                                    console.log("Error, No Confidant Available");
+                                    callback(chat);
                                 }
-                            } else {
-                                console.log("Error, No Confidant Available");
-                            }
-                        }).catch((error) => {
-                            // client.emit("findConfidantError", error);
-                            console.log("Error: " + error);
-                        });
-                }).catch((error) => {
-                    // client.emit("findConfidantError", error);
-                    console.log("Error: " + error);
-                });
+                            });
+                        } else {
+                            callback("Error, No Confidant Available");
+                        }
+                    } else {
+                        callback("Error, No Confidant Available");
+                    }
+                }).catch((error) => callback(error));
         });
 
         client.on("disconnect", () => {
