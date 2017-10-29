@@ -96,11 +96,11 @@ exports = module.exports = function (serverIO) {
                 .then((confidantID) => {
                     if (confidantID) {
                         let socketID = clientRecipient(confidantID);
-                        
+
                         if (serverIO.sockets.connected[socketID]) {
                             serverIO.sockets.connected[socketID].emit("match", chatInfo, (response) => {
                                 let chat = response[0]
-
+                                
                                 if (chat) {
                                     callback(chat);
                                 } else {
@@ -119,13 +119,8 @@ exports = module.exports = function (serverIO) {
         client.on("disconnect", () => {
             connectedSockets.forEach((socket) => {
                 if (socket.socketID == client.id) {
-
-                    if (socket.userID) {
-                        socket.socketID = undefined;
-                    } else {
-                        var index = connectedSockets.indexOf(socket);
-                        connectedSockets.splice(index, 1);
-                    }
+                    var index = connectedSockets.indexOf(socket);
+                    connectedSockets.splice(index, 1);
                 }
             });
             console.log("User Disconnected");
