@@ -54,10 +54,12 @@ chatSchema.set("toJSON", {
 
 var Chat = mongoose.model("Chat", chatSchema);
 var ChatProfile = mongoose.model("ChatProfile", chatProfileSchema);
+var Message = mongoose.model("Message", messageSchema);
 
 // ----- MODULE EXPORTS -------- //
 module.exports = {
     schema: chatSchema,
     Chat: Chat,
-    ChatProfile: ChatProfile
+    ChatProfile: ChatProfile,
+    Message: Message
 };
