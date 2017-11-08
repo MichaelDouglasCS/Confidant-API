@@ -100,7 +100,7 @@ exports = module.exports = function (serverIO) {
                         if (serverIO.sockets.connected[socketID]) {
                             serverIO.sockets.connected[socketID].emit("match", chatInfo, (response) => {
                                 let chat = response[0]
-                                
+
                                 if (chat) {
                                     callback(chat);
                                 } else {
@@ -114,6 +114,18 @@ exports = module.exports = function (serverIO) {
                         callback("Error, No Confidant Available");
                     }
                 }).catch((error) => callback(error));
+        });
+
+        //Send Message
+        client.on("sendMessage", (messageReceived) => {
+            let message = new chat.Message(messageReceived);
+            message.id = mongoose.Types.ObjectId();
+
+            let socketID = clientRecipient(message.recipientID);
+
+            if (serverIO.sockets.connected[socketID]) {
+                serverIO.sockets.connected[socketID].emit("message", message);
+            }
         });
 
         client.on("disconnect", () => {
