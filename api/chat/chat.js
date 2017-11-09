@@ -23,6 +23,7 @@ var chatProfileSchema = Schema({
 });
 
 var messageSchema = Schema({
+    chatID: String,
     id: String,
     timestamp: Number,
     recipientID: String,

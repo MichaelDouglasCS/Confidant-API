@@ -90,7 +90,6 @@ exports = module.exports = function (serverIO) {
         //Start Conversation With an Confidant
         client.on("startConversation", (chatReceived, callback) => {
             let chatInfo = new chat.Chat(chatReceived);
-            chatInfo.id = mongoose.Types.ObjectId();
 
             user.matchConfidantByKnowledgeId(chatInfo.knowledge.id)
                 .then((confidantID) => {
@@ -119,7 +118,6 @@ exports = module.exports = function (serverIO) {
         //Send Message
         client.on("sendMessage", (messageReceived) => {
             let message = new chat.Message(messageReceived);
-            message.id = mongoose.Types.ObjectId();
 
             let socketID = clientRecipient(message.recipientID);
 
