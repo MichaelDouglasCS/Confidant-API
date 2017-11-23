@@ -122,6 +122,8 @@ exports = module.exports = function (serverIO) {
             let socketID = clientRecipient(message.recipientID);
 
             if (serverIO.sockets.connected[socketID]) {
+                console.log(message)
+                console.log(serverIO.sockets.connected[socketID]);
                 serverIO.sockets.connected[socketID].emit("message", message);
             }
         });
