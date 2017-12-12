@@ -19,7 +19,7 @@ What things you need to install the software.
 ### Installing
 
 Firs of all, you need install the Visual Studio Code or another Source Code Editor of your choice. 
-I will give you the way to install de Visual Studio Code that can be found on the site, but if you prefer another, can find it in the Google <3!
+I will give you the way to install de Visual Studio Code that can be found on the site, but if you prefer another, can find it in the Google ❤️!
 
 ```
 https://code.visualstudio.com/
