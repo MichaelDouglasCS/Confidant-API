@@ -97,7 +97,7 @@ var listAll = function () {
     return new Promise((resolve, reject) => {
         Knowledge.find()
             .then((knowledges) => {
-                knowledges.forEach(knowledge => {
+                knowledges.forEach(function(knowledge) {
                     knowledge.topic = capitalize.words(knowledge.topic)
                 });
                 resolve(knowledges);
