@@ -97,9 +97,9 @@ var listAll = function () {
     return new Promise((resolve, reject) => {
         Knowledge.find()
             .then((knowledges) => {
-                knowledges.forEach(function(knowledge) {
+                for each (var knowledge in knowledges) {
                     knowledge.topic = capitalize.words(knowledge.topic)
-                });
+                };
                 resolve(knowledges);
             }).catch(err => reject(err));
     });
