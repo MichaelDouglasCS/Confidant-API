@@ -23,10 +23,10 @@ router.post("/", (req, res) => {
     user.create(userReceived)
         .then((userAuth) => {
             let responseObj = userAuth;
-            res.status(200).json(responseObj);
+            res.status(200).json(responseObj.toJSON());
         }).catch((error) => {
             let httpCode = error.status || 500;
-            res.status(httpCode).json(responseUtils.buildBaseResponse(error));
+            res.status(httpCode).json(responseUtils.buildBaseResponse(error).toJSON());
         });
 });
 
