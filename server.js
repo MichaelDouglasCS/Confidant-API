@@ -55,44 +55,44 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 passport.use(new FacebookStrategy(configAuth.facebookAuth, configAuth.facebookCallback));
 
-//Middleware for User
-app.use(function (req, res, next) {
+// //Middleware for User
+// app.use(function (req, res, next) {
 
-    //check if it's user endpoint
-    let isUsersEndpoint = req.url.indexOf("/users") !== -1;
-    if (isUsersEndpoint) {
-        let isUsers = req.url.indexOf("/users") !== -1;
-        let isAuthenticate = req.url.indexOf("/users/authenticate") !== -1;
-        let isFacebook = req.url.indexOf("/users/facebook") !== -1;
-        let isFacebookCallback = req.url.indexOf("/users/facebook/callback") !== -1;
+//     //check if it's user endpoint
+//     let isUsersEndpoint = req.url.indexOf("/users") !== -1;
+//     if (isUsersEndpoint) {
+//         let isUsers = req.url.indexOf("/users") !== -1;
+//         let isAuthenticate = req.url.indexOf("/users/authenticate") !== -1;
+//         let isFacebook = req.url.indexOf("/users/facebook") !== -1;
+//         let isFacebookCallback = req.url.indexOf("/users/facebook/callback") !== -1;
 
-        if (isAuthenticate || isFacebook || isFacebookCallback) {
-            return next();
-        } else if (isUsers) {
+//         if (isAuthenticate || isFacebook || isFacebookCallback) {
+//             return next();
+//         } else if (isUsers) {
 
-            if (req.method == "POST") {
-                return next();
-            }
-        }
-    }
+//             if (req.method == "POST") {
+//                 return next();
+//             }
+//         }
+//     }
 
-    // check header for token
-    var token = req.headers["authorization"];
+//     // check header for token
+//     var token = req.headers["authorization"];
 
-    if (token && token != "" && token.split(' ')[0] === "Bearer") {
-        jwt.verify(token.split(' ')[1].toObject(), jwtSettings.secretOrKey, function (err, decoded) {
-            if (err) {
-                return res.status(408).json(responseUtils.buildInvalidTokenResponse());
-            } else {
-                // if everything is good, save to request for use in other routes
-                req.decoded = decoded;
-                next();
-            }
-        });
-    } else {
-        return res.status(407).json(responseUtils.buildTokenNotFoundResponse());
-    }
-});
+//     if (token && token != "" && token.split(' ')[0] === "Bearer") {
+//         jwt.verify(token.split(' ')[1], jwtSettings.secretOrKey, function (err, decoded) {
+//             if (err) {
+//                 return res.status(408).json(responseUtils.buildInvalidTokenResponse());
+//             } else {
+//                 // if everything is good, save to request for use in other routes
+//                 req.decoded = decoded;
+//                 next();
+//             }
+//         });
+//     } else {
+//         return res.status(407).json(responseUtils.buildTokenNotFoundResponse());
+//     }
+// });
 
 //Protected Routes
 app.use(baseURL + "/users", user);
