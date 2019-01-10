@@ -29,8 +29,9 @@ app.use(compression());
 
 //MONGOOSE INIT
 var mongoOptions = {
-    server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 300000 } },
-    replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 300000 } }
+    useNewUrlParser: true,
+    keepAlive: 300000, 
+    connectTimeoutMS: 30000
 };
 var mongoURL = (process.env.MONGODB_URL || databaseConfig.development.mongoURL) + "?socketTimeoutMS=120000";
 mongoose.Promise = global.Promise;
