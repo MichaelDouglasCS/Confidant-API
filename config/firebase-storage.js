@@ -7,7 +7,7 @@ var serviceAccount = require("./confidant-api-228201-firebase-adminsdk-rmmr5-f77
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "confidant-api-228201.firebaseio.com"
+  storageBucket: "confidant-api-228201.appspot.com/"
 });
 
 var bucket = admin.storage().bucket();
