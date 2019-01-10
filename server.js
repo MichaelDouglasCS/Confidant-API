@@ -80,7 +80,7 @@ app.use(function (req, res, next) {
     var token = req.headers["authorization"];
 
     if (token && token != "" && token.split(' ')[0] === "Bearer") {
-        jwt.verify(token.split(' ')[1], jwtSettings.secretOrKey, function (err, decoded) {
+        jwt.verify(token.split(' ')[1].toObject(), jwtSettings.secretOrKey, function (err, decoded) {
             if (err) {
                 return res.status(408).json(responseUtils.buildInvalidTokenResponse());
             } else {
