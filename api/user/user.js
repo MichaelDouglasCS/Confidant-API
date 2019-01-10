@@ -353,7 +353,7 @@ var authUserDevBeta = function (userReceived) {
  */
 var generateUserToken = function (userReceived) {
     userReceived.token = null;
-    var token = jwt.sign(userReceived, jwtSettings.secretOrKey);
+    var token = jwt.sign(userReceived.toJSON(), jwtSettings.secretOrKey);
     return token;
 }
 
